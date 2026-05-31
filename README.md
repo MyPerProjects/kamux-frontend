@@ -1,59 +1,39 @@
-# KamuxFrontend
+# Kamux Frontend - Cliente Web Multimedia 🎨🎵
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.13.
+Interfaz de usuario moderna y responsiva desarrollada sobre Angular, diseñada específicamente para la reproducción fluida de contenido multimedia en tiempo real, gestión de listas de reproducción personalizadas y sincronización interactiva de letras de canciones.
 
-## Development server
+## 🚀 Arquitectura del Cliente
 
-To start a local development server, run:
+El frontend opera como un cliente de una arquitectura distribuida basada en microservicios, consumiendo de forma segura las pasarelas empresariales de datos y streaming de audio:
 
-```bash
-ng serve
-```
+Flujo: Angular App (Cliente) ➔ Kamux Backend (NestJS / Puerto 4000) ➔ Microservicio Multimedia (Express / Puerto 5000)
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## 🎤 Características Principales
 
-## Code scaffolding
+- Módulo de Audio Avanzado: Implementación nativa sobre la API de HTML5 con soporte completo para la lectura de rangos binarios dinámicos (HTTP 206), permitiendo un rebobinado e inicio de pista instantáneo.
+- Sincronización de Letras: Interfaz optimizada con desplazamiento automático interactivo emparejada con el pipeline de normalización de metadata del sistema core.
+- Persistencia Dinámica: Gestión en caliente de historial de pistas reproducidas y catálogos vinculados a la base de datos relacional.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## ⚙️ Configuración del Entorno (Variables de Entorno)
 
-```bash
-ng generate component component-name
-```
+Para producción, el cliente se conecta de forma directa a los endpoints seguros desplegados a través de tu DNS dinámico. Asegúrate de configurar tu archivo de variables en src/environments/environment.prod.ts apuntando a tu dominio oficial del backend en la nube: https://kamux-api.duckdns.org
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## 🛠️ Comandos de Desarrollo y Mantenimiento
 
-```bash
-ng generate --help
-```
+### Instalar Dependencias Locales
 
-## Building
+Para descargar todos los paquetes necesarios del proyecto ejecuta:
 
-To build the project run:
+- npm install
 
-```bash
-ng build
-```
+### Levantar Servidor de Desarrollo Local
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Para compilar la aplicación en tu computadora local y escuchar cambios en tiempo real en el puerto predeterminado (http://localhost:4200) ejecuta:
 
-## Running unit tests
+- ng serve
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+### Compilar el Proyecto para Producción
 
-```bash
-ng test
-```
+Genera el empaquetado optimizado, comprimido y minimizado en la carpeta dist/ listo para ser desplegado de forma permanente en servidores de producción ejecutando:
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- ng build --configuration production
