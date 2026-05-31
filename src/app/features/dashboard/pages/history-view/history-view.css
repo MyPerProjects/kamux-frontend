@@ -1,0 +1,175 @@
+.history-page {
+  padding: 0;
+  background: transparent;
+  color: #ffffff;
+  box-sizing: border-box;
+}
+
+.history-header {
+  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.back-btn {
+  background: transparent;
+  color: #1db954; /* Cambiado al verde oficial Kamux */
+  border: 1px solid #1db954;
+  padding: 6px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  align-self: flex-start;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+}
+
+.back-btn:hover {
+  background-color: #1db954;
+  color: #ffffff;
+}
+
+.back-btn:active {
+  transform: scale(0.96);
+}
+
+.history-header h2 {
+  font-size: 26px;
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+/* GRILLA DISEÑO BASE ESCRITORIO PC */
+.history-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
+  gap: 32px 24px;
+  width: 100%;
+}
+
+.ytm-song-card {
+  width: 100%;
+  cursor: pointer;
+}
+
+.card-thumb-wrapper {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #181818;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.card-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.play-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none; /* Soluciona parpadeo en PC */
+}
+
+.play-icon {
+  color: #ffffff;
+  font-size: 34px;
+  pointer-events: none;
+}
+
+.card-info {
+  margin-top: 12px;
+}
+
+.card-title {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: bold;
+  margin: 0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-meta {
+  color: #b3b3b3;
+  font-size: 12px;
+  margin: 4px 0 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobile-card-title-overlay {
+  display: none;
+}
+
+/* CONTROL DE HOVERS EXCLUSIVO PC */
+@media (hover: hover) and (pointer: fine) {
+  .ytm-song-card:hover .card-thumb {
+    transform: scale(1.03);
+  }
+  .ytm-song-card:hover .desktop-play-overlay {
+    opacity: 1;
+  }
+}
+
+/* ADAPTACIÓN MÓVIL EXACTA A DOS CANCIONES POR FILA */
+@media (max-width: 768px) {
+  .history-header h2 {
+    font-size: 22px;
+  }
+
+  .history-grid {
+    grid-template-columns: repeat(2, 1fr); /* Fuerza exactamente 2 columnas simétricas */
+    gap: 14px 12px;
+  }
+
+  .card-info {
+    display: none; /* Oculta la metadata externa para evitar desencajes táctiles */
+  }
+
+  .desktop-play-overlay {
+    display: none !important; /* Desactiva la capa de PC en pantallas touch */
+  }
+
+  .mobile-card-title-overlay {
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.3) 80%, transparent 100%);
+    padding: 8px 6px;
+    box-sizing: border-box;
+  }
+
+  .mobile-card-title-overlay p {
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: bold;
+    margin: 0;
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}

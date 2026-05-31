@@ -1,0 +1,32 @@
+<div class="search-results-page">
+  <div class="results-header">
+    <button class="back-btn" (click)="goBack()">← Volver al inicio</button>
+    <h2>
+      Resultados oficiales para: <span class="highlight">"{{ currentSearch }}"</span>
+    </h2>
+  </div>
+
+  <div class="loading-spinner" *ngIf="loading">
+    <div class="spinner"></div>
+    <p style="margin-top: 15px; color: #aaa">Escaneando servidores de Google...</p>
+  </div>
+
+  <div class="results-list" *ngIf="!loading && results.length > 0">
+    <div class="track-row" *ngFor="let song of results" (click)="playSong(song)">
+      <div class="track-left">
+        <img [src]="song.thumbnail || 'assets/default-track.png'" alt="Cover" class="track-cover" />
+        <div class="track-details">
+          <span class="track-title">{{ song.title }}</span>
+          <span class="track-artist">{{ song.artist }}</span>
+        </div>
+      </div>
+      <div class="track-right">
+        <span class="track-badge">Oficial</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="no-results" *ngIf="!loading && results.length === 0">
+    <p>No se encontraron lanzamientos oficiales. Intenta con otros términos.</p>
+  </div>
+</div>

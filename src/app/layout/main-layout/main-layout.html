@@ -1,0 +1,157 @@
+<div class="app-container">
+  <div class="sidebar-overlay" [class.show]="isSidebarOpen" (click)="isSidebarOpen = false"></div>
+
+  <aside class="sidebar" [class.open]="isSidebarOpen">
+    <div class="logo">
+      <h1>Kamux</h1>
+      <button class="btn-close-sidebar" (click)="isSidebarOpen = false">✕</button>
+    </div>
+    <nav class="menu">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="isSidebarOpen = false"><span>🏠</span> Inicio / Buscar</a>
+      <a routerLink="/playlists" routerLinkActive="active" (click)="isSidebarOpen = false"><span>🎶</span> Mis Playlists </a>
+    </nav>
+    <div class="user-section" *ngIf="currentUser$ | async as user">
+      <p class="username">👤 {{ user.username }}</p>
+      <button class="btn-logout" (click)="onLogout()">Cerrar Sesión</button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="mobile-top-bar">
+      <button class="btn-hamburger" (click)="isSidebarOpen = true">☰</button>
+      <span class="mobile-app-title">Kamux</span>
+    </header>
+    <router-outlet></router-outlet>
+  </main>
+
+  <div class="player-expanded-panel" [class.active]="isPlayerExpanded" [class.tabs-opened]="isTabsSectionOpen">
+    <div class="expanded-panel-header">
+      <button class="btn-minimize-panel" (click)="minimizePanel()">▼</button>
+    </div>
+
+    <div class="expanded-panel-body" *ngIf="currentSong$ | async as song">
+      <div class="eq-canvas-container">
+        <canvas #equalizerCanvas></canvas>
+      </div>
+
+      <div class="mobile-mini-top-player" *ngIf="isTabsSectionOpen" (click)="isTabsSectionOpen = false">
+        <div class="mini-player-left">
+          <img [src]="song.thumbnail" alt="Thumb" class="mini-player-thumb" />
+          <div class="mini-player-texts">
+            <p class="mini-title">{{ song.title }}</p>
+            <p class="mini-artist">{{ song.artist }}</p>
+          </div>
+        </div>
+        <div class="mini-player-right">
+          <button class="mini-play-btn" (click)="onTogglePlay(); $event.stopPropagation()">
+            {{ (isPlaying$ | async) ? '⏸' : '▶' }}
+          </button>
+        </div>
+      </div>
+
+      <div class="mobile-main-player-block" *ngIf="!isTabsSectionOpen" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)">
+        <div class="expanded-left-cover-block">
+          <div class="giant-cover-wrapper">
+            <img [src]="song.thumbnail" alt="Giant Cover" class="giant-cover-img" />
+          </div>
+        </div>
+
+        <div class="mobile-expanded-player-ui">
+          <div class="mobile-track-meta">
+            <h2 class="m-track-title">{{ song.title }}</h2>
+            <p class="m-track-artist">{{ song.artist }}</p>
+          </div>
+          <div class="mobile-progress-wrapper">
+            <input type="range" min="0" [max]="duration$ | async" [value]="isUserSeeking ? temporarySeekValue : (currentTime$ | async)" class="progress-slider" (input)="onSeekInput($event)" (change)="onSeekChange($event)" />
+            <div class="mobile-time-stamps">
+              <span>{{ formatTime(isUserSeeking ? temporarySeekValue : (currentTime$ | async)) }}</span>
+              <span>{{ formatTime(duration$ | async) }}</span>
+            </div>
+          </div>
+          <div class="mobile-controls-row">
+            <button class="m-ctrl-prev" (click)="onPrevious(); $event.stopPropagation()">⏮</button>
+            <button class="m-ctrl-main-play" (click)="onTogglePlay(); $event.stopPropagation()">
+              {{ (isPlaying$ | async) ? '⏸' : '▶' }}
+            </button>
+            <button class="m-ctrl-next" (click)="onNext(); $event.stopPropagation()">⏭</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="expanded-right-tabs-block" [class.fullscreen-active]="isTabsSectionOpen">
+        <div class="tabs-header-row">
+          <button [class.active]="activeTab === 'queue'" (click)="setTab('queue'); isTabsSectionOpen = true">A CONTINUACIÓN</button>
+          <button [class.active]="activeTab === 'lyrics'" (click)="setTab('lyrics'); isTabsSectionOpen = true">LETRA</button>
+        </div>
+
+        <div class="tabs-content-viewport">
+          <div class="tab-pane-queue" *ngIf="activeTab === 'queue'">
+            <div class="queue-tracks-list-container" *ngIf="playlistQueue$ | async as currentQueue">
+              <div class="queue-track-item" *ngFor="let track of currentQueue" [class.current-playing-row]="track.youtube_id === song.youtube_id" (click)="playFromQueue(track, currentQueue)">
+                <img [src]="track.thumbnail || 'assets/default-track.png'" class="q-track-mini-thumb" alt="Thumb" />
+                <div class="q-track-texts">
+                  <p class="q-track-title">{{ track.title }}</p>
+                  <p class="q-track-artist">{{ track.artist }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane-lyrics" *ngIf="activeTab === 'lyrics'">
+            <div class="lyrics-loading-box" *ngIf="isLoadingLyrics">
+              <p class="lyrics-placeholder-text">Cargando...</p>
+            </div>
+            <div class="lyrics-scroll-viewport" #lyricsContainer *ngIf="lyricsData && !isLoadingLyrics">
+              <div class="lyric-line" *ngFor="let line of displayLines; let idx = index" [class.active]="idx === activeLineIndex">
+                {{ line.text }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="player-bar" (click)="togglePlayerExpand($event)">
+    <div class="current-track">
+      <div class="track-info" *ngIf="currentSong$ | async as song; else noSong">
+        <img [src]="song.thumbnail" alt="Mini Cover" class="bar-mini-cover" />
+        <div class="bar-track-texts">
+          <p class="track-title">{{ song.title }}</p>
+          <p class="track-artist">{{ song.artist }}</p>
+        </div>
+      </div>
+      <ng-template #noSong>
+        <div class="track-info">
+          <div class="bar-mini-cover-placeholder"></div>
+          <div class="bar-track-texts">
+            <p class="track-title">Ninguna canción sonando</p>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+
+    <div class="player-center-block">
+      <div class="player-controls">
+        <button class="control-btn" (click)="onPrevious()">⏮</button>
+        <button class="control-btn play-btn" (click)="onTogglePlay()">{{ (isPlaying$ | async) ? '⏸' : '▶' }}</button>
+        <button class="control-btn" (click)="onNext()">⏭</button>
+      </div>
+      <div class="progress-timeline-wrapper" *ngIf="currentSong$ | async">
+        <span class="time-stamp">{{ formatTime(currentTime$ | async) }}</span>
+        <input type="range" class="progress-slider" [max]="duration$ | async" [value]="currentTime$ | async" (input)="onSeekInput($event)" (change)="onSeekChange($event)" />
+        <span class="time-stamp">{{ formatTime(duration$ | async) }}</span>
+      </div>
+    </div>
+
+    <div class="mobile-bar-actions">
+      <button class="mobile-bar-play-btn" (click)="onTogglePlay(); $event.stopPropagation()">
+        {{ (isPlaying$ | async) ? '⏸' : '▶' }}
+      </button>
+    </div>
+    <div class="player-volume">
+      <span>🔊</span>
+      <input type="range" class="volume-slider" (input)="onVolumeChange($event)" />
+    </div>
+  </footer>
+</div>

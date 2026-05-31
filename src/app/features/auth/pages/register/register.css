@@ -1,0 +1,180 @@
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #000000;
+  font-family: Arial, sans-serif;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.register-box {
+  background-color: #121212;
+  padding: 40px;
+  border-radius: 8px;
+  border: 1px solid #282828;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  width: 100%;
+  max-width: 400px;
+  color: #ffffff;
+  box-sizing: border-box;
+}
+
+.auth-logo {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.auth-logo h1 {
+  color: #1db954;
+  font-size: 32px;
+  font-weight: bold;
+  letter-spacing: -1px;
+  margin: 0;
+}
+
+h2 {
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 28px;
+  font-size: 20px;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #b3b3b3;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 4px;
+  border: 1px solid #3a3a3c;
+  background-color: #1c1c1e;
+  color: #ffffff;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #1db954;
+  background-color: #2c2c2e;
+}
+
+.error-msg {
+  color: #ff453a;
+  font-size: 13px;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.success-msg {
+  color: #30d158;
+  font-size: 13px;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 24px;
+  background-color: #1db954;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+button:hover:not(:disabled) {
+  background-color: #1ed760;
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+button:disabled {
+  background-color: #282828;
+  color: #777777;
+  cursor: not-allowed;
+}
+
+.auth-redirect {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 14px;
+  color: #b3b3b3;
+}
+
+.auth-redirect a {
+  color: #1db954;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.auth-redirect a:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================================================
+   📱 RESPONSIVE - REDMI 10C Y DISPOSITIVOS MÓVILES (HASTA 768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .register-container {
+    align-items: flex-start;
+    padding-top: 32px;
+  }
+
+  .register-box {
+    padding: 24px 20px;
+    border: none;
+    background-color: transparent;
+    box-shadow: none;
+    max-width: 100%;
+  }
+
+  .auth-logo h1 {
+    font-size: 36px;
+  }
+
+  h2 {
+    font-size: 22px;
+    margin-bottom: 32px;
+  }
+
+  .form-group {
+    margin-bottom: 24px;
+  }
+
+  .form-group input {
+    padding: 16px;
+    font-size: 16px; /* Desactiva el zoom nativo de iOS/Android */
+    background-color: #1c1c1e;
+  }
+
+  button {
+    padding: 16px;
+    font-size: 16px;
+    margin-top: 8px;
+  }
+
+  .auth-redirect {
+    margin-top: 32px;
+    font-size: 15px;
+  }
+}

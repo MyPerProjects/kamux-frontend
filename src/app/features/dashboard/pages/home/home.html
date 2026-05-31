@@ -1,0 +1,110 @@
+<div class="home-container">
+  <div class="search-section">
+    <form (ngSubmit)="onSearchSubmit()" class="search-form">
+      <input
+        type="text"
+        name="searchQuery"
+        [(ngModel)]="searchQuery"
+        placeholder="¿Qué deseas escuchar?"
+        autocomplete="off"
+      />
+      <button type="submit">Buscar</button>
+    </form>
+  </div>
+
+  <div class="sections-wrapper">
+    <div class="loader" *ngIf="isLoadingHistory">Sincronizando tus secciones personalizadas...</div>
+
+    <section class="section-block" *ngIf="!isLoadingHistory && historySongs.length > 0">
+      <div class="section-header-row">
+        <div class="header-left">
+          <h2 class="section-title">Volver a escuchar</h2>
+        </div>
+        <div class="header-actions">
+          <button class="ytm-btn-more" (click)="goToHistoryView()">Más</button>
+          <button class="ytm-arrow-btn" (click)="scrollSection(scrollContainer, 'left')">‹</button>
+          <button class="ytm-arrow-btn" (click)="scrollSection(scrollContainer, 'right')">›</button>
+        </div>
+      </div>
+
+      <div class="ytm-horizontal-scroll" #scrollContainer (scroll)="onScrollHistory($event)">
+        <div class="ytm-history-page" *ngFor="let page of historyPages">
+          <div
+            class="ytm-song-card"
+            *ngFor="let song of page"
+            (click)="playSongFromList(song, historySongs)"
+          >
+            <div class="card-thumb-wrapper">
+              <img [src]="song.thumbnail" alt="Cover" class="card-thumb" />
+              <div class="play-overlay desktop-play-overlay"><span class="play-icon">▶</span></div>
+              <div class="mobile-card-title-overlay">
+                <p>{{ song.title }}</p>
+              </div>
+            </div>
+            <div class="card-info">
+              <p class="card-title" [title]="song.title">{{ song.title }}</p>
+              <p class="card-meta">Canción • {{ song.artist }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="carousel-indicators" *ngIf="pagesArray.length > 1">
+        <span
+          *ngFor="let page of pagesArray"
+          class="dot"
+          [class.active]="page === activePageIndex"
+          (click)="scrollToPage(page)">
+        </span>
+      </div>
+    </section>
+
+    <section
+      class="section-block"
+      style="margin-top: 45px"
+      *ngIf="!isLoadingHistory && quickSelectSongs.length > 0"
+    >
+      <div class="section-header-row">
+        <div class="header-left">
+          <h2 class="section-title">Selección rápida</h2>
+        </div>
+        <div class="header-actions">
+          <button class="ytm-btn-more" (click)="playAllQuickSelect()">Reproducir todo</button>
+          <button class="ytm-arrow-btn" (click)="scrollSection(quickScrollContainer, 'left')">
+            ‹
+          </button>
+          <button class="ytm-arrow-btn" (click)="scrollSection(quickScrollContainer, 'right')">
+            ›
+          </button>
+        </div>
+      </div>
+
+      <div class="ytm-quick-scroll-wrapper" #quickScrollContainer>
+        <div
+          class="ytm-quick-row-item"
+          *ngFor="let song of quickSelectSongs"
+          (click)="playSongFromList(song, quickSelectSongs)"
+        >
+          <div class="quick-thumb-wrapper">
+            <img [src]="song.thumbnail" alt="Cover" class="quick-thumb" />
+            <div class="quick-play-overlay"><span class="quick-play-icon">▶</span></div>
+          </div>
+
+          <div class="quick-song-details">
+            <p class="quick-title" [title]="song.title">{{ song.title }}</p>
+            <p class="quick-meta">
+              <span class="mobile-meta-artist">{{ song.artist }}</span>
+              <span class="desktop-meta-extra"> • Oficial</span>
+            </p>
+          </div>
+
+          <button class="btn-quick-options" (click)="$event.stopPropagation()">⦙</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="no-history-prompt" *ngIf="!isLoadingHistory && historySongs.length === 0">
+      <p>Aún no tienes canciones en tu historial. ¡Busca tus primeros tracks oficiales arriba!</p>
+    </div>
+  </div>
+</div>
