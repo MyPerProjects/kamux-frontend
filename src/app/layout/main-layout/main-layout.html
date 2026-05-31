@@ -7,8 +7,16 @@
       <button class="btn-close-sidebar" (click)="isSidebarOpen = false">✕</button>
     </div>
     <nav class="menu">
-      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="isSidebarOpen = false"><span>🏠</span> Inicio / Buscar</a>
-      <a routerLink="/playlists" routerLinkActive="active" (click)="isSidebarOpen = false"><span>🎶</span> Mis Playlists </a>
+      <a
+        routerLink="/"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        (click)="isSidebarOpen = false"
+        ><span>🏠</span> Inicio / Buscar</a
+      >
+      <a routerLink="/playlists" routerLinkActive="active" (click)="isSidebarOpen = false"
+        ><span>🎶</span> Mis Playlists
+      </a>
     </nav>
     <div class="user-section" *ngIf="currentUser$ | async as user">
       <p class="username">👤 {{ user.username }}</p>
@@ -24,17 +32,21 @@
     <router-outlet></router-outlet>
   </main>
 
-  <div class="player-expanded-panel" [class.active]="isPlayerExpanded" [class.tabs-opened]="isTabsSectionOpen">
+  <div
+    class="player-expanded-panel"
+    [class.active]="isPlayerExpanded"
+    [class.tabs-opened]="isTabsSectionOpen"
+  >
     <div class="expanded-panel-header">
       <button class="btn-minimize-panel" (click)="minimizePanel()">▼</button>
     </div>
 
     <div class="expanded-panel-body" *ngIf="currentSong$ | async as song">
-      <div class="eq-canvas-container">
-        <canvas #equalizerCanvas></canvas>
-      </div>
-
-      <div class="mobile-mini-top-player" *ngIf="isTabsSectionOpen" (click)="isTabsSectionOpen = false">
+      <div
+        class="mobile-mini-top-player"
+        *ngIf="isTabsSectionOpen"
+        (click)="isTabsSectionOpen = false"
+      >
         <div class="mini-player-left">
           <img [src]="song.thumbnail" alt="Thumb" class="mini-player-thumb" />
           <div class="mini-player-texts">
@@ -49,7 +61,12 @@
         </div>
       </div>
 
-      <div class="mobile-main-player-block" *ngIf="!isTabsSectionOpen" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)">
+      <div
+        class="mobile-main-player-block"
+        *ngIf="!isTabsSectionOpen"
+        (touchstart)="onTouchStart($event)"
+        (touchend)="onTouchEnd($event)"
+      >
         <div class="expanded-left-cover-block">
           <div class="giant-cover-wrapper">
             <img [src]="song.thumbnail" alt="Giant Cover" class="giant-cover-img" />
@@ -62,9 +79,19 @@
             <p class="m-track-artist">{{ song.artist }}</p>
           </div>
           <div class="mobile-progress-wrapper">
-            <input type="range" min="0" [max]="duration$ | async" [value]="isUserSeeking ? temporarySeekValue : (currentTime$ | async)" class="progress-slider" (input)="onSeekInput($event)" (change)="onSeekChange($event)" />
+            <input
+              type="range"
+              min="0"
+              [max]="duration$ | async"
+              [value]="isUserSeeking ? temporarySeekValue : (currentTime$ | async)"
+              class="progress-slider"
+              (input)="onSeekInput($event)"
+              (change)="onSeekChange($event)"
+            />
             <div class="mobile-time-stamps">
-              <span>{{ formatTime(isUserSeeking ? temporarySeekValue : (currentTime$ | async)) }}</span>
+              <span>{{
+                formatTime(isUserSeeking ? temporarySeekValue : (currentTime$ | async))
+              }}</span>
               <span>{{ formatTime(duration$ | async) }}</span>
             </div>
           </div>
@@ -80,15 +107,34 @@
 
       <div class="expanded-right-tabs-block" [class.fullscreen-active]="isTabsSectionOpen">
         <div class="tabs-header-row">
-          <button [class.active]="activeTab === 'queue'" (click)="setTab('queue'); isTabsSectionOpen = true">A CONTINUACIÓN</button>
-          <button [class.active]="activeTab === 'lyrics'" (click)="setTab('lyrics'); isTabsSectionOpen = true">LETRA</button>
+          <button
+            [class.active]="activeTab === 'queue'"
+            (click)="setTab('queue'); isTabsSectionOpen = true"
+          >
+            A CONTINUACIÓN
+          </button>
+          <button
+            [class.active]="activeTab === 'lyrics'"
+            (click)="setTab('lyrics'); isTabsSectionOpen = true"
+          >
+            LETRA
+          </button>
         </div>
 
         <div class="tabs-content-viewport">
           <div class="tab-pane-queue" *ngIf="activeTab === 'queue'">
             <div class="queue-tracks-list-container" *ngIf="playlistQueue$ | async as currentQueue">
-              <div class="queue-track-item" *ngFor="let track of currentQueue" [class.current-playing-row]="track.youtube_id === song.youtube_id" (click)="playFromQueue(track, currentQueue)">
-                <img [src]="track.thumbnail || 'assets/default-track.png'" class="q-track-mini-thumb" alt="Thumb" />
+              <div
+                class="queue-track-item"
+                *ngFor="let track of currentQueue"
+                [class.current-playing-row]="track.youtube_id === song.youtube_id"
+                (click)="playFromQueue(track, currentQueue)"
+              >
+                <img
+                  [src]="track.thumbnail || 'assets/default-track.png'"
+                  class="q-track-mini-thumb"
+                  alt="Thumb"
+                />
                 <div class="q-track-texts">
                   <p class="q-track-title">{{ track.title }}</p>
                   <p class="q-track-artist">{{ track.artist }}</p>
@@ -101,8 +147,16 @@
             <div class="lyrics-loading-box" *ngIf="isLoadingLyrics">
               <p class="lyrics-placeholder-text">Cargando...</p>
             </div>
-            <div class="lyrics-scroll-viewport" #lyricsContainer *ngIf="lyricsData && !isLoadingLyrics">
-              <div class="lyric-line" *ngFor="let line of displayLines; let idx = index" [class.active]="idx === activeLineIndex">
+            <div
+              class="lyrics-scroll-viewport"
+              #lyricsContainer
+              *ngIf="lyricsData && !isLoadingLyrics"
+            >
+              <div
+                class="lyric-line"
+                *ngFor="let line of displayLines; let idx = index"
+                [class.active]="idx === activeLineIndex"
+              >
                 {{ line.text }}
               </div>
             </div>
@@ -134,12 +188,21 @@
     <div class="player-center-block">
       <div class="player-controls">
         <button class="control-btn" (click)="onPrevious()">⏮</button>
-        <button class="control-btn play-btn" (click)="onTogglePlay()">{{ (isPlaying$ | async) ? '⏸' : '▶' }}</button>
+        <button class="control-btn play-btn" (click)="onTogglePlay()">
+          {{ (isPlaying$ | async) ? '⏸' : '▶' }}
+        </button>
         <button class="control-btn" (click)="onNext()">⏭</button>
       </div>
       <div class="progress-timeline-wrapper" *ngIf="currentSong$ | async">
         <span class="time-stamp">{{ formatTime(currentTime$ | async) }}</span>
-        <input type="range" class="progress-slider" [max]="duration$ | async" [value]="currentTime$ | async" (input)="onSeekInput($event)" (change)="onSeekChange($event)" />
+        <input
+          type="range"
+          class="progress-slider"
+          [max]="duration$ | async"
+          [value]="currentTime$ | async"
+          (input)="onSeekInput($event)"
+          (change)="onSeekChange($event)"
+        />
         <span class="time-stamp">{{ formatTime(duration$ | async) }}</span>
       </div>
     </div>

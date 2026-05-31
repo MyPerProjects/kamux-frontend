@@ -1,12 +1,24 @@
 /* ==========================================================================
-   🏠 DISEÑO BASE DEL CONTENEDOR (KAMUX LAYOUT)
+   🏠 VARIABLES Y CONFIGURACIÓN BASE GLOBAL
    ========================================================================== */
+:root {
+  --vk-green: #1db954; /* Verde Kamux oficial */
+  --bg-dark: #000000;
+  --bg-panel: #121212;
+  --border-color: #282828;
+  --text-muted: #b3b3b3;
+}
+
+.app-container,
+.player-expanded-panel {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh; /* Altura dinámica para evitar bloqueos de barras en móvil */
+}
+
 .app-container {
   display: flex;
-  height: 100vh;
-  height: 100dvh;
-  width: 100vw;
-  background-color: #000000;
+  background-color: var(--bg-dark);
   color: #ffffff;
   font-family: Arial, sans-serif;
   overflow: hidden;
@@ -16,20 +28,41 @@
 /* SIDEBAR IZQUIERDA */
 .sidebar {
   width: 240px;
-  background-color: #000000;
+  background-color: var(--bg-dark);
   display: flex;
   flex-direction: column;
   padding: 24px;
-  border-right: 1px solid #282828;
+  border-right: 1px solid var(--border-color);
   box-sizing: border-box;
 }
 
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
 .logo h1 {
-  color: #1db954; /* Verde Kamux oficial */
+  color: var(--vk-green);
   font-size: 28px;
-  margin: 0 0 32px 0;
+  margin: 0;
   font-weight: bold;
   letter-spacing: -1px;
+}
+
+.btn-close-sidebar {
+  display: none; /* Oculto en PC */
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition:
+    color 0.2s,
+    background-color 0.2s;
 }
 
 .menu {
@@ -40,7 +73,7 @@
 }
 
 .menu a {
-  color: #b3b3b3;
+  color: var(--text-muted);
   text-decoration: none;
   font-size: 14px;
   font-weight: bold;
@@ -50,33 +83,32 @@
   padding: 8px 12px;
   border-radius: 4px;
   transition:
-    color 0.2s ease,
-    background-color 0.2s ease;
+    color 0.2s,
+    background-color 0.2s;
 }
 
 .menu a:hover,
 .menu a.active {
   color: #ffffff;
-  background-color: #282828;
+  background-color: var(--border-color);
 }
 
 .user-section {
   margin-top: auto;
   padding-top: 16px;
-  border-top: 1px solid #282828;
+  border-top: 1px solid var(--border-color);
 }
 
 .username {
   font-size: 14px;
   margin: 0 0 12px 0;
-  color: #ffffff;
 }
 
 .btn-logout {
   width: 100%;
   background: transparent;
   color: #ffffff;
-  border: 1px solid #b3b3b3;
+  border: 1px solid var(--text-muted);
   padding: 8px;
   border-radius: 20px;
   font-weight: bold;
@@ -86,30 +118,29 @@
 }
 
 .btn-logout:hover {
-  background-color: #282828;
+  background-color: var(--border-color);
 }
 
-/* ÁREA DE CONTENIDO CENTRAL */
+/* ==========================================================================
+   💻 ÁREA CENTRAL Y BARRA DE REPRODUCCIÓN (ESCRITORIO)
+   ========================================================================== */
 .main-content {
   flex: 1;
-  height: calc(100vh - 90px);
+  height: calc(100dvh - 90px);
   overflow-y: auto;
   background: linear-gradient(to bottom, #1c1c1c, #0b0b0b);
   padding: 40px;
   box-sizing: border-box;
 }
 
-/* ==========================================================================
-   🔊 REPRODUCTOR BAR INFERIOR (FOOTER FIXED CONSTANTE - ESCRITORIO)
-   ========================================================================== */
 .player-bar {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100vw;
   height: 90px;
-  background-color: #121212;
-  border-top: 1px solid #282828;
+  background-color: var(--bg-panel);
+  border-top: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -123,21 +154,15 @@
   width: 25%;
   min-width: 180px;
 }
-
 .track-info {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.bar-mini-cover,
-.bar-mini-cover-placeholder,
-.mobile-bar-progress-line,
-.mobile-bar-actions {
-  display: none;
-}
-
-.track-info .track-title {
+.track-info .track-title,
+.mini-title,
+.q-track-title {
   font-size: 14px;
   font-weight: bold;
   color: #ffffff;
@@ -147,9 +172,11 @@
   text-overflow: ellipsis;
 }
 
-.track-info .track-artist {
+.track-info .track-artist,
+.mini-artist,
+.q-track-artist {
   font-size: 12px;
-  color: #b3b3b3;
+  color: var(--text-muted);
   margin: 4px 0 0 0;
   white-space: nowrap;
   overflow: hidden;
@@ -174,7 +201,7 @@
 .control-btn {
   background: none;
   border: none;
-  color: #b3b3b3;
+  color: var(--text-muted);
   font-size: 18px;
   cursor: pointer;
   transition:
@@ -185,16 +212,13 @@
 .control-btn:hover {
   color: #ffffff;
 }
-
 .play-btn {
   font-size: 26px;
   color: #ffffff;
 }
-
 .play-btn:active {
   transform: scale(0.95);
 }
-
 .progress-timeline-wrapper {
   display: flex;
   align-items: center;
@@ -204,18 +228,24 @@
 
 .time-stamp {
   font-size: 11px;
-  color: #b3b3b3;
+  color: var(--text-muted);
   font-family: monospace;
   min-width: 35px;
 }
 
-.progress-slider {
-  flex: 1;
-  accent-color: #1db954;
+.progress-slider,
+.volume-slider {
+  accent-color: var(--vk-green);
   height: 4px;
   cursor: pointer;
 }
-
+.progress-slider {
+  flex: 1;
+}
+.volume-slider {
+  accent-color: #ffffff;
+  width: 100px;
+}
 .player-volume {
   width: 25%;
   min-width: 150px;
@@ -225,26 +255,29 @@
   gap: 8px;
 }
 
-.volume-slider {
-  accent-color: #ffffff;
-  width: 100px;
-  height: 4px;
-  cursor: pointer;
+/* Ocultos por defecto en versión de escritorio */
+.bar-mini-cover,
+.bar-mini-cover-placeholder,
+.mobile-bar-actions,
+.mobile-top-bar,
+.mobile-mini-top-player,
+.mobile-main-player-block,
+.mobile-expanded-player-ui {
+  display: none;
 }
 
 /* ==========================================================================
-   🚀 PANTALLA EXPANDIDA COMPLETA (INTERFAZ ESCRITORIO PC)
+   🚀 PANTALLA EXPANDIDA GIGANTE (ESCRITORIO)
    ========================================================================== */
 .player-expanded-panel {
+  position: fixed;
   top: 100dvh;
-  height: 100vh;
-  height: 100dvh; /* 🚀 Evita que el panel se estire por debajo de las barras del celular */
-  background-color: #000000;
-  padding: 16px 0 0 0;
-  z-index: 2000;
+  left: 0;
+  background-color: var(--bg-dark);
+  z-index: 998;
+  transition: top 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
 }
 
 .player-expanded-panel.active {
@@ -264,7 +297,7 @@
 .btn-minimize-panel {
   background: none;
   border: none;
-  color: #b3b3b3;
+  color: var(--text-muted);
   font-size: 20px;
   cursor: pointer;
   transition: color 0.2s;
@@ -272,12 +305,6 @@
 
 .btn-minimize-panel:hover {
   color: #ffffff;
-}
-
-.mobile-mini-top-player,
-.mobile-main-player-block,
-.mobile-expanded-player-ui {
-  display: none;
 }
 
 .expanded-panel-body {
@@ -306,47 +333,41 @@
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8);
   position: relative;
   z-index: 2;
-  background: transparent;
 }
 
-.giant-cover-img {
+.giant-cover-img,
+.bar-mini-cover,
+.mini-player-thumb,
+.q-track-mini-thumb {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
 .expanded-right-tabs-block {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100vw;
-  height: calc(
-    56px + env(safe-area-inset-bottom, 12px)
-  ); /* 🚀 Le damos más grosor y sumamos el área segura del celular */
-  padding-bottom: env(
-    safe-area-inset-bottom,
-    12px
-  ); /* 🚀 Empuja los botones hacia arriba para que no los tape el sistema de Android */
-  background-color: #121212;
-  border-radius: 16px 16px 0 0;
-  border: none;
-  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.8);
-  transition: height 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
-  max-width: 100vw;
-  box-sizing: border-box;
+  flex: 1;
+  max-width: 500px;
+  height: 100%;
+  background-color: var(--bg-panel);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 2;
 }
 
 .tabs-header-row {
   display: flex;
-  border-bottom: 1px solid #282828;
-  background-color: #121212;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-panel);
 }
 
 .tabs-header-row button {
   flex: 1;
   background: none;
   border: none;
-  color: #b3b3b3;
+  color: var(--text-muted);
   padding: 16px 0;
   font-size: 13px;
   font-weight: bold;
@@ -356,10 +377,7 @@
   position: relative;
 }
 
-.tabs-header-row button:hover {
-  color: #ffffff;
-}
-
+.tabs-header-row button:hover,
 .tabs-header-row button.active {
   color: #ffffff;
 }
@@ -371,7 +389,7 @@
   left: 15%;
   width: 70%;
   height: 3px;
-  background-color: #1db954;
+  background-color: var(--vk-green);
 }
 
 .tabs-content-viewport {
@@ -379,7 +397,6 @@
   padding: 24px;
   overflow-y: auto;
 }
-
 .queue-tracks-list-container {
   display: flex;
   flex-direction: column;
@@ -397,43 +414,23 @@
 }
 
 .queue-track-item:hover {
-  background-color: #282828;
+  background-color: var(--border-color);
 }
-
 .queue-track-item.current-playing-row {
   background-color: rgba(29, 185, 84, 0.1);
+}
+.queue-track-item.current-playing-row .q-track-title {
+  color: var(--vk-green);
 }
 
 .q-track-mini-thumb {
   width: 42px;
   height: 42px;
   border-radius: 4px;
-  object-fit: cover;
 }
-
 .q-track-texts {
   flex: 1;
   overflow: hidden;
-}
-
-.q-track-title {
-  font-size: 13px;
-  font-weight: bold;
-  color: #ffffff;
-  margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.queue-track-item.current-playing-row .q-track-title {
-  color: #1db954;
-}
-
-.q-track-artist {
-  font-size: 12px;
-  color: #b3b3b3;
-  margin: 4px 0 0 0;
 }
 
 .lyrics-scroll-viewport {
@@ -455,7 +452,7 @@
 }
 
 .lyric-line.active {
-  color: #1db954;
+  color: var(--vk-green);
   font-size: 26px;
   text-shadow: 0 0 15px rgba(29, 185, 84, 0.4);
 }
@@ -466,75 +463,65 @@
   align-items: center;
   height: 100%;
 }
-
 .lyrics-placeholder-text {
-  color: #b3b3b3;
+  color: var(--text-muted);
   font-size: 14px;
 }
 
 /* ==========================================================================
-   📱 ADAPTACIÓN MÓVIL TOTALMENTE SIMÉTRICA (REDMI 10C - 360x800)
+   📱 RESPONSIVE MEDIA QUERY (REDMI 10C OPTIMIZADO - 360x800)
    ========================================================================== */
-.mobile-top-bar {
-  display: none;
-}
-
 @media (max-width: 768px) {
   .sidebar {
     position: fixed;
     top: 0;
     left: -240px;
     height: 100vh;
-    z-index: 2010;
-    transition: left 0.3s ease;
+    height: 100dvh;
+    width: 240px;
+    background: #000000 !important;
+    background-color: #000000 !important;
+    border-right: 1px solid var(--border-color);
+    z-index: 2500 !important;
+    transition: left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
   }
 
   .sidebar.open {
     left: 0;
   }
-
   .sidebar .logo {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     width: 100%;
-    margin-bottom: 32px;
   }
-
   .sidebar .logo h1 {
-    margin: 0;
     font-size: 24px;
   }
-
   .btn-close-sidebar {
-    background: none;
-    border: none;
-    color: #b3b3b3;
-    font-size: 18px;
-    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 8px;
-    border-radius: 50%;
-    transition:
-      color 0.2s ease,
-      background-color 0.2s ease;
   }
-
   .btn-close-sidebar:hover,
   .btn-close-sidebar:active {
     color: #ffffff;
-    background-color: #282828;
+    background-color: var(--border-color);
   }
 
+  /* ✨ CORREGIDO: Barra superior 100% transparente para fusionarse con el degradado de Kamux */
   .mobile-top-bar {
     display: flex;
     align-items: center;
     gap: 16px;
     margin-bottom: 24px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #282828;
+    padding: 10px 16px 12px 16px;
+    background: transparent !important;
+    background-color: transparent !important;
+    border-bottom: none !important; /* Quitamos la línea divisoria para evitar cortes drásticos */
+    position: relative;
+    z-index: 10;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
   }
 
   .btn-hamburger {
@@ -542,25 +529,21 @@
     border: none;
     color: #ffffff;
     font-size: 26px;
+    cursor: pointer;
   }
-
   .mobile-app-title {
     font-size: 20px;
     font-weight: bold;
-    color: #1db954;
+    color: var(--vk-green);
   }
 
-  /* REPRODUCTOR BAR INFERIOR EN MÓVIL (72px de grosor) */
+  /* REPRODUCTOR MINI INFERIOR EN MÓVIL */
   .player-bar {
     height: 72px;
-    background-color: #121212;
     border-top: 1px solid #242424;
     padding: 0 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100vw;
-    box-sizing: border-box;
+    background-color: var(--bg-panel) !important;
+    transform: translate3d(0, 0, 0);
   }
 
   .current-track {
@@ -568,29 +551,17 @@
     min-width: auto;
   }
 
-  .track-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    width: 100%;
-  }
-
-  .bar-mini-cover {
-    display: block;
-    width: 46px;
-    height: 46px;
-    border-radius: 6px;
-    object-fit: cover;
-    flex-shrink: 0;
-  }
-
+  .bar-mini-cover,
   .bar-mini-cover-placeholder {
     display: block;
     width: 46px;
     height: 46px;
     border-radius: 6px;
-    background-color: #282828;
     flex-shrink: 0;
+  }
+
+  .bar-mini-cover-placeholder {
+    background-color: var(--border-color);
   }
 
   .bar-track-texts {
@@ -602,17 +573,11 @@
   }
 
   .track-info .track-title {
-    font-size: 14px;
-    color: #ffffff;
     font-weight: 500;
   }
-
   .track-info .track-artist {
-    font-size: 12px;
-    color: #b3b3b3;
     margin-top: 3px;
   }
-
   .player-center-block,
   .player-volume {
     display: none !important;
@@ -636,56 +601,45 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0;
     width: 100%;
     height: 100%;
   }
 
   .main-content {
-    height: calc(100vh - 72px);
+    height: calc(100dvh - 72px);
     padding: 16px;
+    background-color: #000000 !important;
   }
 
-  /* PANEL GIGANTE EXPANDIDO MÓVIL */
+  /* PANEL EXPANDIDO COMPLETO EN MÓVIL */
   .player-expanded-panel {
-    top: 100vh;
-    height: 100vh;
-    background-color: #000000;
-    padding: 16px 0 0 0;
     z-index: 2000;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
+    padding: 16px 0 0 0;
+    background: #000000 !important;
+    background-color: #000000 !important;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
   }
-
   .player-expanded-panel.tabs-opened {
     padding-top: 0;
   }
-
-  .expanded-panel-header {
-    height: 40px;
-    margin-bottom: 4px;
-    display: flex;
-    justify-content: flex-start;
-    width: 100%;
-    padding: 0 20px;
-    box-sizing: border-box;
-  }
-
   .player-expanded-panel.tabs-opened .expanded-panel-header {
     display: none;
   }
 
-  .expanded-panel-body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  .expanded-panel-header {
     justify-content: flex-start;
-    flex: 1;
     width: 100%;
-    gap: 0;
-    overflow: hidden;
+    padding: 0 20px;
+    background-color: #000000 !important;
+  }
+  .expanded-panel-body {
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 100%;
     padding: 0;
+    background: #000000 !important;
+    background-color: #000000 !important;
   }
 
   .mobile-mini-top-player {
@@ -694,12 +648,14 @@
     justify-content: space-between;
     width: 100vw;
     height: 64px;
-    background-color: #000000;
+    background: #000000 !important;
+    background-color: #000000 !important;
     padding: 0 20px;
     box-sizing: border-box;
     border-bottom: 1px solid #121212;
     flex-shrink: 0;
-    z-index: 2;
+    z-index: 5;
+    transform: translate3d(0, 0, 0);
   }
 
   .mini-player-left {
@@ -709,34 +665,11 @@
     overflow: hidden;
     flex: 1;
   }
-
   .mini-player-thumb {
     width: 40px;
     height: 40px;
     border-radius: 4px;
-    object-fit: cover;
   }
-
-  .mini-player-texts {
-    overflow: hidden;
-  }
-
-  .mini-title {
-    font-size: 14px;
-    font-weight: bold;
-    color: #ffffff;
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .mini-artist {
-    font-size: 12px;
-    color: #b3b3b3;
-    margin: 2px 0 0 0;
-  }
-
   .mini-player-right .mini-play-btn {
     background: none;
     border: none;
@@ -754,6 +687,9 @@
     padding: 0 20px 60px 20px;
     box-sizing: border-box;
     z-index: 2;
+    background: #000000 !important;
+    background-color: #000000 !important;
+    transform: translate3d(0, 0, 0);
   }
 
   .expanded-left-cover-block {
@@ -763,7 +699,6 @@
     margin-bottom: 24px;
     flex: none;
   }
-
   .giant-cover-wrapper {
     width: 80vw;
     max-width: 280px;
@@ -778,37 +713,32 @@
     max-width: 310px;
     box-sizing: border-box;
   }
-
   .mobile-track-meta {
     text-align: left;
     margin-bottom: 20px;
     width: 100%;
   }
-
   .m-track-title {
     font-size: 22px;
     font-weight: bold;
   }
-
   .m-track-artist {
     font-size: 15px;
-    color: #b3b3b3;
+    color: var(--text-muted);
   }
 
   .mobile-progress-wrapper {
     width: 100%;
     margin-bottom: 20px;
   }
-
   .mobile-progress-wrapper .progress-slider {
     width: 100%;
   }
-
   .mobile-time-stamps {
     display: flex;
     justify-content: space-between;
     font-size: 11px;
-    color: #b3b3b3;
+    color: var(--text-muted);
     margin-top: 6px;
     font-family: monospace;
   }
@@ -820,7 +750,6 @@
     gap: 44px;
     width: 100%;
   }
-
   .mobile-controls-row button {
     background: none;
     border: none;
@@ -829,7 +758,7 @@
   }
 
   .m-ctrl-main-play {
-    background-color: #1db954 !important;
+    background-color: var(--vk-green) !important;
     color: #ffffff !important;
     width: 64px;
     height: 64px;
@@ -841,57 +770,57 @@
     box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
   }
 
-  /* PESTAÑAS MÓVIL EN LA PARTE INFERIOR */
+  /* PESTAÑAS AJUSTADAS PARA ANDROID REDMI 10C */
   .expanded-right-tabs-block {
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100vw;
-    height: 52px;
-    background-color: #121212;
+    height: calc(60px + env(safe-area-inset-bottom, 14px));
+    padding-bottom: env(safe-area-inset-bottom, 14px);
+    background-color: var(--bg-panel);
     border-radius: 16px 16px 0 0;
     border: none;
     box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.8);
     transition: height 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
     max-width: 100vw;
+    box-sizing: border-box;
+    transform: translate3d(0, 0, 0);
   }
 
   .expanded-right-tabs-block.fullscreen-active {
-    height: calc(100dvh - 64px); /* 🚀 Ajuste simétrico dinámico */
-    background-color: #000000;
+    height: calc(100dvh - 64px);
+    background: #000000 !important;
+    background-color: #000000 !important;
     border-radius: 0;
     padding-bottom: 0;
   }
 
   .tabs-header-row {
-    background-color: #121212;
-    border-bottom: 1px solid #282828;
+    background-color: var(--bg-panel);
   }
-
   .expanded-right-tabs-block.fullscreen-active .tabs-header-row {
-    background-color: #000000;
+    background: #000000 !important;
+    background-color: #000000 !important;
   }
-
   .tabs-header-row button {
     padding: 16px 0;
   }
-
   .tabs-header-row button.active {
-    color: #1db954;
+    color: var(--vk-green);
   }
-
   .tabs-header-row button.active::after {
     left: 25%;
     width: 50%;
-    background-color: #1db954;
+    background-color: var(--vk-green);
   }
 
   .tabs-content-viewport {
     display: none;
     padding: 20px;
-    background-color: #000000;
+    background: #000000 !important;
+    background-color: #000000 !important;
   }
-
   .expanded-right-tabs-block.fullscreen-active .tabs-content-viewport {
     display: block;
   }
@@ -901,30 +830,8 @@
     color: rgba(255, 255, 255, 0.4);
     text-align: center;
   }
-
   .lyric-line.active {
     font-size: 23px;
-    color: #1db954;
+    color: var(--vk-green);
   }
-}
-
-/* ==========================================================================
-   🎨 EFECTO ECUALIZADOR (Fondo Detrás de las Capas)
-   ========================================================================== */
-.eq-canvas-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 0;
-  pointer-events: none;
-  filter: blur(80px);
-  opacity: 0.6;
-}
-
-.eq-canvas-container canvas {
-  width: 100%;
-  height: 100%;
-  display: block;
 }
