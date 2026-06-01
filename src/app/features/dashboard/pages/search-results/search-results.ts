@@ -63,32 +63,25 @@ export class SearchResults implements OnInit {
     });
   }
 
-  // 🚀 GOLAZO: Modificado para generar una Radio Temática Real en lugar de usar los resultados sueltos
+  /**
+   * 📻 ACTIVACIÓN DEL ALGORITMO INFINITO
+   * Al reproducir una canción, limpia el historial de reproducción previo, establece
+   * el track seleccionado como la raíz y enciende el motor de recomendaciones automáticas.
+   */
   playSong(song: Song): void {
     // 1. Registramos de inmediato en tu historial de PostgreSQL
     this.songsService.trackPlayback(song).subscribe({
       error: (err) => console.error('Error al registrar historial en segundo plano:', err),
     });
 
-    // 2. Cargamos y reproducimos la canción seleccionada al instante para cero delay
+    // 2. Seteamos la cola inicial únicamente con la canción seleccionada y activamos el modo Autoplay (true)
+    // Esto limpia la cola vieja y le dice al AudioService que empiece a jalar recomendados de fondo.
+    this.audioService.setQueue([song], song, true);
+
+    // 3. Cargamos y reproducimos la canción seleccionada al instante para cero delay
     this.audioService.loadAndPlay(song);
 
-    // 3. Generamos la cola automática usando el nombre del artista como semilla inteligente (Radio de ...)
-    this.songsService.searchSongs(song.artist).subscribe({
-      next: (radioSongs: Song[]) => {
-        // Filtramos para evitar que la canción actual se duplique en la cola intermedia
-        const finalQueue = [song, ...radioSongs.filter((s) => s.youtube_id !== song.youtube_id)];
-
-        // Seteamos la cola real unificada en el AudioService
-        this.audioService.setQueue(finalQueue, song);
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Error al generar la radio automática del artista:', err);
-        // Salvaguarda: Si falla el algoritmo de similitud, cae con elegancia usando la lista de búsqueda
-        this.audioService.setQueue(this.results, song);
-      },
-    });
+    this.cdr.detectChanges();
   }
 
   goBack(): void {

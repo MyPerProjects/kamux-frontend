@@ -63,7 +63,6 @@ export class MainLayout implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
-    // Escucha cambios de canción para cargar letras dinámicamente
     this.subManager.add(
       this.currentSong$.subscribe((song) => {
         if (song) {
@@ -75,14 +74,12 @@ export class MainLayout implements OnInit, OnDestroy, AfterViewInit {
       }),
     );
 
-    // Sincroniza la línea activa basada en el tiempo actual
     this.subManager.add(
       this.currentTime$.subscribe((seconds) => {
         if (!this.isUserSeeking) this.syncActiveLine(seconds);
       }),
     );
 
-    // 🚀 Resetea la bandera de carga cada vez que el array de la cola cambie
     this.subManager.add(
       this.playlistQueue$.subscribe(() => {
         this.isLoadingMore = false;
@@ -104,14 +101,12 @@ export class MainLayout implements OnInit, OnDestroy, AfterViewInit {
 
   onQueueScroll(event: Event): void {
     const element = event.target as HTMLElement;
-
-    // Calculamos los pixeles restantes para llegar al final exacto del scrollbar
     const threshold = 50;
     const reachedBottom =
       element.scrollHeight - element.scrollTop <= element.clientHeight + threshold;
 
     if (reachedBottom && !this.isLoadingMore) {
-      this.isLoadingMore = true; // Bloqueamos nuevas peticiones táctiles inmediatas
+      this.isLoadingMore = true;
       console.log('[🚀 UI Layout] Usuario llegó al final de la cola, solicitando más tracks...');
       this.audioService.loadMoreInfiniteTracks();
     }
@@ -126,7 +121,6 @@ export class MainLayout implements OnInit, OnDestroy, AfterViewInit {
 
   togglePlayerExpand(event: MouseEvent): void {
     const target = event.target as HTMLElement;
-    // Evita expandir si se interactúa con algún control directo
     if (target.closest('.player-controls, .player-volume, .progress-slider, .mobile-bar-actions'))
       return;
     this.isPlayerExpanded = !this.isPlayerExpanded;
@@ -140,7 +134,6 @@ export class MainLayout implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private handleEqualizerLoop(): void {
-    // El ecualizador corre si el panel está abierto y no está tapado por las letras/cola en móvil
     if (this.isPlayerExpanded && !this.isTabsSectionOpen) {
       setTimeout(() => {
         this.resizeCanvas();
@@ -195,12 +188,12 @@ export class MainLayout implements OnInit, OnDestroy, AfterViewInit {
       song.artist,
     );
     this.lastLoadedSongId = song.youtube_id;
+    this.lyricsData = null;
     this.isLoadingLyrics = false;
   }
 
   setTab(tab: 'queue' | 'lyrics'): void {
     this.activeTab = tab;
-    // Si cambia a letras, intenta cargarlas inmediatamente si no se han cargado antes
     this.currentSong$
       .subscribe((song) => {
         if (song) this.checkAndLoadLyrics(song);
@@ -284,7 +277,7 @@ export class MainLayout implements OnInit, OnDestroy, AfterViewInit {
   }
 
   playFromQueue(s: Song, q: Song[]): void {
+    this.audioService.setQueue(q, s, true);
     this.audioService.loadAndPlay(s);
-    this.audioService.setQueue(q, s);
   }
 }
