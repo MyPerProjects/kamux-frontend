@@ -63,23 +63,24 @@ export class SearchResults implements OnInit {
     });
   }
 
-  /**
-   * 📻 ACTIVACIÓN DEL ALGORITMO INFINITO
-   * Al reproducir una canción, limpia el historial de reproducción previo, establece
-   * el track seleccionado como la raíz y enciende el motor de recomendaciones automáticas.
-   */
   playSong(song: Song): void {
-    // 1. Registramos de inmediato en tu historial de PostgreSQL
-    this.songsService.trackPlayback(song).subscribe({
-      error: (err) => console.error('Error al registrar historial en segundo plano:', err),
+    const cleanSong: Song = {
+      ...song,
+      youtube_id: song.youtube_id || (song as any).id,
+    };
+
+    if (!cleanSong.youtube_id) return;
+
+    // 1. Registramos en el historial de PostgreSQL
+    this.songsService.trackPlayback(cleanSong).subscribe({
+      error: (err) => console.error('Error al registrar historial:', err),
     });
 
-    // 2. Seteamos la cola inicial únicamente con la canción seleccionada y activamos el modo Autoplay (true)
-    // Esto limpia la cola vieja y le dice al AudioService que empiece a jalar recomendados de fondo.
-    this.audioService.setQueue([song], song, true);
+    // 2. Cargamos la canción como elemento único en la cola y activamos el modo Autoplay (true)
+    this.audioService.setQueue([cleanSong], cleanSong, true);
 
-    // 3. Cargamos y reproducimos la canción seleccionada al instante para cero delay
-    this.audioService.loadAndPlay(song);
+    // 3. Reproducción inmediata para cero delay
+    this.audioService.loadAndPlay(cleanSong);
 
     this.cdr.detectChanges();
   }
