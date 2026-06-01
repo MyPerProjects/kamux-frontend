@@ -2,12 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { API_URL } from '../constants';
 import { Song } from '../../shared/models/music.model';
+import { SongsService } from './songs.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AudioService {
   private readonly audio = new Audio();
+  private readonly songsService = inject(SongsService);
 
   private readonly currentSongSubject = new BehaviorSubject<Song | null>(null);
   public currentSong$ = this.currentSongSubject.asObservable();
@@ -27,6 +29,7 @@ export class AudioService {
   private playlistQueue: Song[] = [];
   private currentIndex: number = -1;
   private isSeeking: boolean = false;
+  private isAutoplayMode: boolean = false;
 
   // 🚀 VARIABLES DEL MOTOR DE FRECUENCIA BINARIA
   private audioContext: AudioContext | null = null;
@@ -63,9 +66,6 @@ export class AudioService {
     });
   }
 
-  /**
-   * ⚡ CONDUCTO DE EXTRACCIÓN: Inicializa y expone el nodo de análisis multimedia
-   */
   public getAnalyserNode(): AnalyserNode | null {
     if (this.analyser) return this.analyser;
 
@@ -85,9 +85,10 @@ export class AudioService {
     }
   }
 
-  setQueue(songs: Song[], currentSong: Song): void {
-    this.playlistQueue = songs;
-    this.playlistQueueSubject.next(songs);
+  setQueue(songs: Song[], currentSong: Song, autoplayMode: boolean = false): void {
+    this.isAutoplayMode = autoplayMode;
+    this.playlistQueue = [...songs];
+    this.playlistQueueSubject.next(this.playlistQueue);
     this.currentIndex = songs.findIndex((s) => s.youtube_id === currentSong.youtube_id);
   }
 
@@ -111,6 +112,47 @@ export class AudioService {
       console.error('Error al reproducir audio:', err);
       this.isPlayingSubject.next(false);
     });
+
+    // 📻 CARGA PEREZOZA INTEGRADA: Si está activado el modo automático, alimenta la cola con recomendados
+    if (this.isAutoplayMode) {
+      this.fetchAndAppendRelatedSongs(song.youtube_id);
+    }
+  }
+
+  private fetchAndAppendRelatedSongs(youtubeId: string): void {
+    this.songsService.getRelatedSongs(youtubeId).subscribe({
+      next: (recommendedTracks) => {
+        if (!recommendedTracks || recommendedTracks.length === 0) return;
+
+        // Filtramos para asegurarnos de no añadir canciones que ya existen en nuestra cola actual
+        const filteredTracks = recommendedTracks.filter(
+          (track) => !this.playlistQueue.some((q) => q.youtube_id === track.youtube_id),
+        );
+
+        if (filteredTracks.length > 0) {
+          console.log(
+            `[📻 Kamux Radio] Inyectando ${filteredTracks.length} tracks sugeridos a la cola.`,
+          );
+          this.playlistQueue.push(...filteredTracks);
+          this.playlistQueueSubject.next(this.playlistQueue);
+        }
+      },
+      error: (err) => {
+        console.error(
+          '[🚨 Kamux Radio Error] Falló el fetch asíncrono de recomendados:',
+          err.message,
+        );
+      },
+    });
+  }
+
+  public loadMoreInfiniteTracks(): void {
+    if (this.playlistQueue.length === 0) return;
+    const lastTrack = this.playlistQueue[this.playlistQueue.length - 1];
+    console.log(
+      `[🔄 Scroll Infinito] Disparando recarga perezosa usando como semilla: ${lastTrack.title}`,
+    );
+    this.fetchAndAppendRelatedSongs(lastTrack.youtube_id);
   }
 
   togglePlay(): void {
@@ -137,13 +179,21 @@ export class AudioService {
 
   next(): void {
     if (this.playlistQueue.length === 0 || this.currentIndex === -1) return;
+
+    // Si estamos en el modo de cola infinita inteligente y nos acercamos al final (ej: quedan 4 canciones)
+    // forzamos automáticamente la recarga asíncrona de más tracks usando la última canción de la lista.
+    if (this.isAutoplayMode && this.playlistQueue.length - this.currentIndex <= 5) {
+      this.loadMoreInfiniteTracks();
+    }
+
     this.currentIndex = (this.currentIndex + 1) % this.playlistQueue.length;
     this.loadAndPlay(this.playlistQueue[this.currentIndex]);
   }
 
   previous(): void {
     if (this.playlistQueue.length === 0 || this.currentIndex === -1) return;
-    this.currentIndex = this.currentIndex === 0 ? this.playlistQueue.length - 1 : this.currentIndex - 1;
+    this.currentIndex =
+      this.currentIndex === 0 ? this.playlistQueue.length - 1 : this.currentIndex - 1;
     this.loadAndPlay(this.playlistQueue[this.currentIndex]);
   }
 

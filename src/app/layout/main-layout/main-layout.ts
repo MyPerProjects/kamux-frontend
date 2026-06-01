@@ -44,6 +44,7 @@ export class MainLayout implements OnInit, OnDestroy, AfterViewInit {
   activeTab: 'queue' | 'lyrics' = 'queue';
   isUserSeeking = false;
   temporarySeekValue = 0;
+  isLoadingMore = false;
 
   private touchStartY = 0;
   lyricsData: ParsedLyrics | null = null;
@@ -80,6 +81,13 @@ export class MainLayout implements OnInit, OnDestroy, AfterViewInit {
         if (!this.isUserSeeking) this.syncActiveLine(seconds);
       }),
     );
+
+    // 🚀 Resetea la bandera de carga cada vez que el array de la cola cambie
+    this.subManager.add(
+      this.playlistQueue$.subscribe(() => {
+        this.isLoadingMore = false;
+      }),
+    );
   }
 
   ngAfterViewInit(): void {
@@ -92,6 +100,21 @@ export class MainLayout implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy(): void {
     this.subManager.unsubscribe();
     if (this.animationId) cancelAnimationFrame(this.animationId);
+  }
+
+  onQueueScroll(event: Event): void {
+    const element = event.target as HTMLElement;
+
+    // Calculamos los pixeles restantes para llegar al final exacto del scrollbar
+    const threshold = 50;
+    const reachedBottom =
+      element.scrollHeight - element.scrollTop <= element.clientHeight + threshold;
+
+    if (reachedBottom && !this.isLoadingMore) {
+      this.isLoadingMore = true; // Bloqueamos nuevas peticiones táctiles inmediatas
+      console.log('[🚀 UI Layout] Usuario llegó al final de la cola, solicitando más tracks...');
+      this.audioService.loadMoreInfiniteTracks();
+    }
   }
 
   private resizeCanvas(): void {

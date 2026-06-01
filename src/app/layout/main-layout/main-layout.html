@@ -123,7 +123,11 @@
 
         <div class="tabs-content-viewport">
           <div class="tab-pane-queue" *ngIf="activeTab === 'queue'">
-            <div class="queue-tracks-list-container" *ngIf="playlistQueue$ | async as currentQueue">
+            <div
+              class="queue-tracks-list-container"
+              *ngIf="playlistQueue$ | async as currentQueue"
+              (scroll)="onQueueScroll($event)"
+            >
               <div
                 class="queue-track-item"
                 *ngFor="let track of currentQueue"

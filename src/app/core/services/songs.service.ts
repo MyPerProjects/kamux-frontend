@@ -16,6 +16,10 @@ export class SongsService {
     });
   }
 
+  getRelatedSongs(youtubeId: string): Observable<Song[]> {
+    return this.http.get<Song[]>(`${API_URL}/songs/related/${youtubeId}`);
+  }
+
   getHistory(): Observable<PlaybackHistory[]> {
     return this.http.get<PlaybackHistory[]>(`${API_URL}/songs/history`);
   }
