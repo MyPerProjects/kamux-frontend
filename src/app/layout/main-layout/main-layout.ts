@@ -180,12 +180,16 @@ export class MainLayout implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async checkAndLoadLyrics(song: Song): Promise<void> {
-    if (this.activeTab !== 'lyrics' || this.lastLoadedSongId === song.youtube_id) return;
+    if (
+      this.activeTab !== 'lyrics' ||
+      this.lastLoadedSongId === song.youtube_id ||
+      !song.youtube_id
+    )
+      return;
     this.isLoadingLyrics = true;
 
     const data = await this.lyricsService.fetchLyrics(song.youtube_id, song.title, song.artist);
-
-    this.lyricsData = data; // 🚀 Fijamos los datos de la letra descargada de forma permanente
+    this.lyricsData = data;
     this.lastLoadedSongId = song.youtube_id;
     this.isLoadingLyrics = false;
   }

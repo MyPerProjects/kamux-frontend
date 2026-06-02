@@ -2,7 +2,7 @@
    🏠 VARIABLES Y CONFIGURACIÓN BASE GLOBAL
    ========================================================================== */
 :root {
-  --vk-green: #1db954; /* Verde Kamux oficial */
+  --vk-green: #1db954;
   --bg-dark: #000000;
   --bg-panel: #121212;
   --border-color: #282828;
@@ -13,7 +13,7 @@
 .player-expanded-panel {
   width: 100vw;
   height: 100vh;
-  height: 100dvh; /* Altura dinámica para evitar bloqueos de barras en móvil */
+  height: 100dvh;
 }
 
 .app-container {
@@ -52,7 +52,7 @@
 }
 
 .btn-close-sidebar {
-  display: none; /* Oculto en PC */
+  display: none;
   background: none;
   border: none;
   color: var(--text-muted);
@@ -154,6 +154,7 @@
   width: 25%;
   min-width: 180px;
 }
+
 .track-info {
   display: flex;
   align-items: center;
@@ -212,13 +213,16 @@
 .control-btn:hover {
   color: #ffffff;
 }
+
 .play-btn {
   font-size: 26px;
   color: #ffffff;
 }
+
 .play-btn:active {
   transform: scale(0.95);
 }
+
 .progress-timeline-wrapper {
   display: flex;
   align-items: center;
@@ -239,13 +243,16 @@
   height: 4px;
   cursor: pointer;
 }
+
 .progress-slider {
   flex: 1;
 }
+
 .volume-slider {
   accent-color: #ffffff;
   width: 100px;
 }
+
 .player-volume {
   width: 25%;
   min-width: 150px;
@@ -255,7 +262,6 @@
   gap: 8px;
 }
 
-/* Ocultos por defecto en versión de escritorio */
 .bar-mini-cover,
 .bar-mini-cover-placeholder,
 .mobile-bar-actions,
@@ -397,6 +403,7 @@
   padding: 24px;
   overflow-y: auto;
 }
+
 .queue-tracks-list-container {
   display: flex;
   flex-direction: column;
@@ -416,9 +423,11 @@
 .queue-track-item:hover {
   background-color: var(--border-color);
 }
+
 .queue-track-item.current-playing-row {
   background-color: rgba(29, 185, 84, 0.1);
 }
+
 .queue-track-item.current-playing-row .q-track-title {
   color: var(--vk-green);
 }
@@ -428,9 +437,35 @@
   height: 42px;
   border-radius: 4px;
 }
+
 .q-track-texts {
   flex: 1;
   overflow: hidden;
+}
+
+/* ✨ NUEVO: Indicador visual premium para el Scroll Infinito Contextual */
+.queue-loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 0;
+  width: 100%;
+}
+
+.queue-loading-spinner::after {
+  content: '';
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-top-color: var(--vk-green);
+  border-radius: 50%;
+  animation: q-spin 0.6s linear infinite;
+}
+
+@keyframes q-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .lyrics-scroll-viewport {
@@ -463,6 +498,7 @@
   align-items: center;
   height: 100%;
 }
+
 .lyrics-placeholder-text {
   color: var(--text-muted);
   font-size: 14px;
@@ -479,10 +515,9 @@
     height: 100vh;
     height: 100dvh;
     width: 240px;
-    background: #000000 !important;
-    background-color: #000000 !important;
+    background-color: #000000;
     border-right: 1px solid var(--border-color);
-    z-index: 2500 !important;
+    z-index: 2500;
     transition: left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     transform: translate3d(0, 0, 0);
     backface-visibility: hidden;
@@ -491,33 +526,35 @@
   .sidebar.open {
     left: 0;
   }
+
   .sidebar .logo {
     width: 100%;
   }
+
   .sidebar .logo h1 {
     font-size: 24px;
   }
+
   .btn-close-sidebar {
     display: flex;
     align-items: center;
     justify-content: center;
   }
+
   .btn-close-sidebar:hover,
   .btn-close-sidebar:active {
     color: #ffffff;
     background-color: var(--border-color);
   }
 
-  /* ✨ CORREGIDO: Barra superior 100% transparente para fusionarse con el degradado de Kamux */
   .mobile-top-bar {
     display: flex;
     align-items: center;
     gap: 16px;
     margin-bottom: 24px;
     padding: 10px 16px 12px 16px;
-    background: transparent !important;
-    background-color: transparent !important;
-    border-bottom: none !important; /* Quitamos la línea divisoria para evitar cortes drásticos */
+    background-color: transparent;
+    border-bottom: none;
     position: relative;
     z-index: 10;
     transform: translate3d(0, 0, 0);
@@ -531,6 +568,7 @@
     font-size: 26px;
     cursor: pointer;
   }
+
   .mobile-app-title {
     font-size: 20px;
     font-weight: bold;
@@ -542,7 +580,7 @@
     height: 72px;
     border-top: 1px solid #242424;
     padding: 0 16px;
-    background-color: var(--bg-panel) !important;
+    background-color: var(--bg-panel);
     transform: translate3d(0, 0, 0);
   }
 
@@ -575,9 +613,11 @@
   .track-info .track-title {
     font-weight: 500;
   }
+
   .track-info .track-artist {
     margin-top: 3px;
   }
+
   .player-center-block,
   .player-volume {
     display: none !important;
@@ -608,21 +648,22 @@
   .main-content {
     height: calc(100dvh - 72px);
     padding: 16px;
-    background-color: #000000 !important;
+    background-color: #000000;
   }
 
   /* PANEL EXPANDIDO COMPLETO EN MÓVIL */
   .player-expanded-panel {
     z-index: 2000;
     padding: 16px 0 0 0;
-    background: #000000 !important;
-    background-color: #000000 !important;
+    background-color: #000000;
     transform: translate3d(0, 0, 0);
     backface-visibility: hidden;
   }
+
   .player-expanded-panel.tabs-opened {
     padding-top: 0;
   }
+
   .player-expanded-panel.tabs-opened .expanded-panel-header {
     display: none;
   }
@@ -631,15 +672,18 @@
     justify-content: flex-start;
     width: 100%;
     padding: 0 20px;
-    background-color: #000000 !important;
+    background-color: #000000;
   }
+
+  /* ✨ CORREGIDO BUG DE OVERFLOW: Permite scroll nativo táctil al abrir las pestañas */
   .expanded-panel-body {
     flex-direction: column;
     justify-content: flex-start;
     width: 100%;
     padding: 0;
-    background: #000000 !important;
-    background-color: #000000 !important;
+    background-color: #000000;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .mobile-mini-top-player {
@@ -648,8 +692,7 @@
     justify-content: space-between;
     width: 100vw;
     height: 64px;
-    background: #000000 !important;
-    background-color: #000000 !important;
+    background-color: #000000;
     padding: 0 20px;
     box-sizing: border-box;
     border-bottom: 1px solid #121212;
@@ -665,11 +708,20 @@
     overflow: hidden;
     flex: 1;
   }
+
   .mini-player-thumb {
     width: 40px;
     height: 40px;
     border-radius: 4px;
   }
+
+  /* ✨ CORREGIDO BUG DE TEXTOS MÓVILES GIGANTES: Corta strings largos para no empujar botones */
+  .mini-player-texts {
+    flex: 1;
+    overflow: hidden;
+    min-width: 0;
+  }
+
   .mini-player-right .mini-play-btn {
     background: none;
     border: none;
@@ -687,8 +739,7 @@
     padding: 0 20px 60px 20px;
     box-sizing: border-box;
     z-index: 2;
-    background: #000000 !important;
-    background-color: #000000 !important;
+    background-color: #000000;
     transform: translate3d(0, 0, 0);
   }
 
@@ -699,6 +750,7 @@
     margin-bottom: 24px;
     flex: none;
   }
+
   .giant-cover-wrapper {
     width: 80vw;
     max-width: 280px;
@@ -713,15 +765,18 @@
     max-width: 310px;
     box-sizing: border-box;
   }
+
   .mobile-track-meta {
     text-align: left;
     margin-bottom: 20px;
     width: 100%;
   }
+
   .m-track-title {
     font-size: 22px;
     font-weight: bold;
   }
+
   .m-track-artist {
     font-size: 15px;
     color: var(--text-muted);
@@ -731,9 +786,11 @@
     width: 100%;
     margin-bottom: 20px;
   }
+
   .mobile-progress-wrapper .progress-slider {
     width: 100%;
   }
+
   .mobile-time-stamps {
     display: flex;
     justify-content: space-between;
@@ -750,6 +807,7 @@
     gap: 44px;
     width: 100%;
   }
+
   .mobile-controls-row button {
     background: none;
     border: none;
@@ -758,15 +816,15 @@
   }
 
   .m-ctrl-main-play {
-    background-color: var(--vk-green) !important;
-    color: #ffffff !important;
+    background-color: var(--vk-green);
+    color: #ffffff;
     width: 64px;
     height: 64px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 26px !important;
+    font-size: 26px;
     box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
   }
 
@@ -790,8 +848,7 @@
 
   .expanded-right-tabs-block.fullscreen-active {
     height: calc(100dvh - 64px);
-    background: #000000 !important;
-    background-color: #000000 !important;
+    background-color: #000000;
     border-radius: 0;
     padding-bottom: 0;
   }
@@ -799,16 +856,19 @@
   .tabs-header-row {
     background-color: var(--bg-panel);
   }
+
   .expanded-right-tabs-block.fullscreen-active .tabs-header-row {
-    background: #000000 !important;
-    background-color: #000000 !important;
+    background-color: #000000;
   }
+
   .tabs-header-row button {
     padding: 16px 0;
   }
+
   .tabs-header-row button.active {
     color: var(--vk-green);
   }
+
   .tabs-header-row button.active::after {
     left: 25%;
     width: 50%;
@@ -818,9 +878,9 @@
   .tabs-content-viewport {
     display: none;
     padding: 20px;
-    background: #000000 !important;
-    background-color: #000000 !important;
+    background-color: #000000;
   }
+
   .expanded-right-tabs-block.fullscreen-active .tabs-content-viewport {
     display: block;
   }
@@ -830,6 +890,7 @@
     color: rgba(255, 255, 255, 0.4);
     text-align: center;
   }
+
   .lyric-line.active {
     font-size: 23px;
     color: var(--vk-green);

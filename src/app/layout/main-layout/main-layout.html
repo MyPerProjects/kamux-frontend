@@ -131,7 +131,9 @@
               <div
                 class="queue-track-item"
                 *ngFor="let track of currentQueue"
-                [class.current-playing-row]="track.youtube_id === song.youtube_id"
+                [class.current-playing-row]="
+                  track.title === song.title && track.artist === song.artist
+                "
                 (click)="playFromQueue(track, currentQueue)"
               >
                 <img

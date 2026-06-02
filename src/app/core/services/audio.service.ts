@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, from, concatMap, toArray } from 'rxjs';
 import { API_URL } from '../constants';
 import { Song } from '../../shared/models/music.model';
 import { SongsService } from './songs.service';
@@ -30,14 +30,13 @@ export class AudioService {
   private currentIndex: number = -1;
   private isSeeking: boolean = false;
   private isAutoplayMode: boolean = false;
+  private isResolvingQueue: boolean = false;
 
-  // 🚀 VARIABLES DEL MOTOR DE FRECUENCIA BINARIA
   private audioContext: AudioContext | null = null;
   private analyser: AnalyserNode | null = null;
   private sourceNode: MediaElementAudioSourceNode | null = null;
 
   constructor() {
-    // Esencial para permitir la lectura de bytes sin bloqueos de seguridad CORS
     this.audio.crossOrigin = 'anonymous';
 
     this.audio.addEventListener('timeupdate', () => {
@@ -68,19 +67,15 @@ export class AudioService {
 
   public getAnalyserNode(): AnalyserNode | null {
     if (this.analyser) return this.analyser;
-
     try {
       this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       this.analyser = this.audioContext.createAnalyser();
-      this.analyser.fftSize = 64; // Resoluciones óptimas para barras simétricas y elegantes en móviles
-
+      this.analyser.fftSize = 64;
       this.sourceNode = this.audioContext.createMediaElementSource(this.audio);
       this.sourceNode.connect(this.analyser);
       this.analyser.connect(this.audioContext.destination);
-
       return this.analyser;
     } catch (e) {
-      console.warn('[⚠️ AudioContext] Bloqueado por interacción del usuario o no soportado.', e);
       return null;
     }
   }
@@ -89,7 +84,11 @@ export class AudioService {
     this.isAutoplayMode = autoplayMode;
     this.playlistQueue = [...songs];
     this.playlistQueueSubject.next(this.playlistQueue);
-    this.currentIndex = songs.findIndex((s) => s.youtube_id === currentSong.youtube_id);
+    this.currentIndex = songs.findIndex(
+      (s) => s.title === currentSong.title && s.artist === currentSong.artist,
+    );
+
+    this.triggerBackgroundQueueResolver();
   }
 
   loadAndPlay(song: Song): void {
@@ -99,34 +98,53 @@ export class AudioService {
     this.currentTimeSubject.next(0);
     this.isSeeking = false;
 
-    // Reactivar el contexto multimedia si el navegador lo dejó en suspenso
     if (this.audioContext && this.audioContext.state === 'suspended') {
       this.audioContext.resume();
     }
 
     const token = localStorage.getItem('kamux_token') || '';
+
+    // INTERCEPTOR FAIL-SAFE: Si el usuario cliqueó un track sin ID de YouTube, lo resuelve en caliente
+    if (!song.youtube_id) {
+      console.log(
+        `[🎯 Clic Caliente] Resolviendo ID en tiempo real para: ${song.artist} - ${song.title}`,
+      );
+      this.songsService.resolveSongId(song.artist, song.title).subscribe({
+        next: (res) => {
+          if (res && res.youtube_id) {
+            song.youtube_id = res.youtube_id;
+            song.thumbnail = res.thumbnail;
+            this.audio.src = `${API_URL}/songs/stream/${song.youtube_id}?token=${token}`;
+            this.audio.load();
+            this.audio.play().catch(() => this.isPlayingSubject.next(false));
+          }
+        },
+        error: () => this.isPlayingSubject.next(false),
+      });
+      return;
+    }
+
     this.audio.src = `${API_URL}/songs/stream/${song.youtube_id}?token=${token}`;
     this.audio.load();
-
     this.audio.play().catch((err) => {
       console.error('Error al reproducir audio:', err);
       this.isPlayingSubject.next(false);
     });
 
-    // 📻 CARGA PEREZOZA INTEGRADA: Si está activado el modo automático, alimenta la cola con recomendados
     if (this.isAutoplayMode) {
-      this.fetchAndAppendRelatedSongs(song.youtube_id);
+      this.fetchAndAppendRelatedSongs(song);
     }
   }
 
-  private fetchAndAppendRelatedSongs(youtubeId: string): void {
-    this.songsService.getRelatedSongs(youtubeId).subscribe({
+  private fetchAndAppendRelatedSongs(song: Song): void {
+    // Usamos metadatos puros de estudio para alimentar el motor de recomendaciones
+    this.songsService.getRelatedSongsExtended(song.artist, song.title).subscribe({
       next: (recommendedTracks) => {
         if (!recommendedTracks || recommendedTracks.length === 0) return;
 
-        // Filtramos para asegurarnos de no añadir canciones que ya existen en nuestra cola actual
         const filteredTracks = recommendedTracks.filter(
-          (track) => !this.playlistQueue.some((q) => q.youtube_id === track.youtube_id),
+          (track) =>
+            !this.playlistQueue.some((q) => q.title === track.title && q.artist === track.artist),
         );
 
         if (filteredTracks.length > 0) {
@@ -135,29 +153,70 @@ export class AudioService {
           );
           this.playlistQueue.push(...filteredTracks);
           this.playlistQueueSubject.next(this.playlistQueue);
+
+          this.triggerBackgroundQueueResolver();
         }
-      },
-      error: (err) => {
-        console.error(
-          '[🚨 Kamux Radio Error] Falló el fetch asíncrono de recomendados:',
-          err.message,
-        );
       },
     });
   }
 
   public loadMoreInfiniteTracks(): void {
     if (this.playlistQueue.length === 0) return;
-    const lastTrack = this.playlistQueue[this.playlistQueue.length - 1];
+
+    // SCROLL SECUENCIAL: Tomamos de manera secuencial los últimos tracks de la cola como contexto ampliado
+    const queueLength = this.playlistQueue.length;
+    const sampleTracks = this.playlistQueue.slice(Math.max(0, queueLength - 3), queueLength);
+
+    // Elegimos de forma cíclica o secuencial uno de los últimos tracks para expandir las recomendaciones
+    const selectedSeed = sampleTracks[Math.floor(Math.random() * sampleTracks.length)];
+
     console.log(
-      `[🔄 Scroll Infinito] Disparando recarga perezosa usando como semilla: ${lastTrack.title}`,
+      `[🔄 Scroll Infinito] Recarga contextual secuencial usando semilla: ${selectedSeed.artist} - ${selectedSeed.title}`,
     );
-    this.fetchAndAppendRelatedSongs(lastTrack.youtube_id);
+    this.fetchAndAppendRelatedSongs(selectedSeed);
+  }
+
+  // WORKER ASÍNCRONO DE FONDO: Resuelve los IDs de la cola de forma secuencial y controlada
+  private triggerBackgroundQueueResolver(): void {
+    if (this.isResolvingQueue) return;
+
+    const unresolvedTracks = this.playlistQueue.filter((t) => !t.youtube_id);
+    if (unresolvedTracks.length === 0) return;
+
+    this.isResolvingQueue = true;
+
+    from(unresolvedTracks)
+      .pipe(
+        concatMap((track) => {
+          return new Promise((resolve) => {
+            this.songsService.resolveSongId(track.artist, track.title).subscribe({
+              next: (res) => {
+                if (res && res.youtube_id) {
+                  track.youtube_id = res.youtube_id;
+                  track.thumbnail = res.thumbnail;
+                }
+                // Pequeño delay de cortesía para estabilizar el consumo de cuota de red
+                setTimeout(() => resolve(track), 300);
+              },
+              error: () => setTimeout(() => resolve(track), 300),
+            });
+          });
+        }),
+      )
+      .subscribe({
+        complete: () => {
+          this.isResolvingQueue = false;
+          this.playlistQueueSubject.next(this.playlistQueue);
+
+          // Re-verificación por si entraron nuevas canciones al final de la cola mientras procesaba
+          const checkNew = this.playlistQueue.some((t) => !t.youtube_id);
+          if (checkNew) this.triggerBackgroundQueueResolver();
+        },
+      });
   }
 
   togglePlay(): void {
     if (!this.audio.src) return;
-
     if (this.audio.paused) {
       if (this.audioContext && this.audioContext.state === 'suspended') {
         this.audioContext.resume();
@@ -180,8 +239,6 @@ export class AudioService {
   next(): void {
     if (this.playlistQueue.length === 0 || this.currentIndex === -1) return;
 
-    // Si estamos en el modo de cola infinita inteligente y nos acercamos al final (ej: quedan 4 canciones)
-    // forzamos automáticamente la recarga asíncrona de más tracks usando la última canción de la lista.
     if (this.isAutoplayMode && this.playlistQueue.length - this.currentIndex <= 5) {
       this.loadMoreInfiniteTracks();
     }

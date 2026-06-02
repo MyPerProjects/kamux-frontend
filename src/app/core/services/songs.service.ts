@@ -25,15 +25,31 @@ export class SongsService {
   }
 
   trackPlayback(song: any): Observable<any> {
-    // 🔍 Agregamos un log en la consola del navegador (F12) para validar qué envía Angular
     console.log('[🚀 Frontend - Service] Enviando track al historial:', song);
 
     return this.http.post<any>(`${API_URL}/songs/history/track`, {
-      youtube_id: song.youtube_id || song.id, // Por si acaso maneja id en lugar de youtube_id
+      youtube_id: song.youtube_id || song.id,
       title: song.title,
       artist: song.artist,
       duration_seconds: song.duration_seconds || 180,
       thumbnail: song.thumbnail,
+    });
+  }
+
+  // 📡 NUEVO: Puente para la Radio Contextual usando metadatos limpios de estudio
+  getRelatedSongsExtended(artist: string, track: string): Observable<Song[]> {
+    return this.http.get<Song[]>(`${API_URL}/songs/related-extended`, {
+      params: { artist, track },
+    });
+  }
+
+  // 📡 NUEVO: Puente para resolver un único ID de YouTube (Fondo o Clic Caliente) bajo demanda
+  resolveSongId(
+    artist: string,
+    track: string,
+  ): Observable<{ youtube_id: string; thumbnail: string }> {
+    return this.http.get<{ youtube_id: string; thumbnail: string }>(`${API_URL}/songs/resolve-id`, {
+      params: { artist, track },
     });
   }
 }
