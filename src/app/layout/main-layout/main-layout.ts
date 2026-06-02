@@ -1,12 +1,4 @@
-import {
-  Component,
-  inject,
-  OnInit,
-  OnDestroy,
-  ElementRef,
-  ViewChild,
-  AfterViewInit,
-} from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
@@ -22,14 +14,13 @@ import { Subscription } from 'rxjs';
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.css',
 })
-export class MainLayout implements OnInit, OnDestroy, AfterViewInit {
+export class MainLayout implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly audioService = inject(AudioService);
   private readonly lyricsService = inject(LyricsFrontendService);
   private readonly router = inject(Router);
 
   @ViewChild('lyricsContainer') private lyricsContainer!: ElementRef;
-  @ViewChild('equalizerCanvas') private equalizerCanvas!: ElementRef<HTMLCanvasElement>;
 
   currentUser$ = this.authService.currentUser$;
   currentSong$ = this.audioService.currentSong$;
@@ -50,8 +41,6 @@ export class MainLayout implements OnInit, OnDestroy, AfterViewInit {
   lyricsData: ParsedLyrics | null = null;
   isLoadingLyrics = false;
   activeLineIndex = -1;
-  private animationId: number | null = null;
-  private canvasContext: CanvasRenderingContext2D | null = null;
   private subManager = new Subscription();
   private lastLoadedSongId = '';
 
@@ -87,16 +76,8 @@ export class MainLayout implements OnInit, OnDestroy, AfterViewInit {
     );
   }
 
-  ngAfterViewInit(): void {
-    if (this.equalizerCanvas) {
-      this.canvasContext = this.equalizerCanvas.nativeElement.getContext('2d');
-      this.resizeCanvas();
-    }
-  }
-
   ngOnDestroy(): void {
     this.subManager.unsubscribe();
-    if (this.animationId) cancelAnimationFrame(this.animationId);
   }
 
   onQueueScroll(event: Event): void {
@@ -112,71 +93,16 @@ export class MainLayout implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  private resizeCanvas(): void {
-    if (!this.equalizerCanvas) return;
-    const canvas = this.equalizerCanvas.nativeElement;
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-
   togglePlayerExpand(event: MouseEvent): void {
     const target = event.target as HTMLElement;
     if (target.closest('.player-controls, .player-volume, .progress-slider, .mobile-bar-actions'))
       return;
     this.isPlayerExpanded = !this.isPlayerExpanded;
-    this.handleEqualizerLoop();
   }
 
   minimizePanel(): void {
     this.isPlayerExpanded = false;
     this.isTabsSectionOpen = false;
-    this.handleEqualizerLoop();
-  }
-
-  private handleEqualizerLoop(): void {
-    if (this.isPlayerExpanded && !this.isTabsSectionOpen) {
-      setTimeout(() => {
-        this.resizeCanvas();
-        this.startEqualizerAnimation();
-      }, 50);
-    } else if (this.animationId) {
-      cancelAnimationFrame(this.animationId);
-      this.animationId = null;
-    }
-  }
-
-  private startEqualizerAnimation(): void {
-    const analyser = this.audioService.getAnalyserNode();
-    if (!analyser || !this.canvasContext) return;
-
-    const canvas = this.equalizerCanvas.nativeElement;
-    const bufferLength = analyser.frequencyBinCount;
-    const dataArray = new Uint8Array(bufferLength);
-
-    const draw = () => {
-      if (!this.isPlayerExpanded || this.isTabsSectionOpen) {
-        this.animationId = null;
-        return;
-      }
-      this.animationId = requestAnimationFrame(draw);
-      analyser.getByteFrequencyData(dataArray);
-
-      this.canvasContext!.clearRect(0, 0, canvas.width, canvas.height);
-      const barWidth = (canvas.width / bufferLength) * 1.5;
-      let x = 0;
-
-      const gradient = this.canvasContext!.createLinearGradient(0, canvas.height, 0, 0);
-      gradient.addColorStop(0, '#1db954');
-      gradient.addColorStop(1, 'rgba(29, 185, 84, 0.1)');
-      this.canvasContext!.fillStyle = gradient;
-
-      for (let i = 0; i < bufferLength; i++) {
-        const barHeight = dataArray[i] * 1.2;
-        this.canvasContext!.fillRect(x, canvas.height - barHeight, barWidth - 2, barHeight);
-        x += barWidth + 2;
-      }
-    };
-    draw();
   }
 
   async checkAndLoadLyrics(song: Song): Promise<void> {
@@ -201,7 +127,6 @@ export class MainLayout implements OnInit, OnDestroy, AfterViewInit {
         if (song) this.checkAndLoadLyrics(song);
       })
       .unsubscribe();
-    this.handleEqualizerLoop();
   }
 
   private syncActiveLine(currentSeconds: number): void {

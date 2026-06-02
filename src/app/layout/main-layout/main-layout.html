@@ -1,9 +1,10 @@
 <div class="app-container">
   <div class="sidebar-overlay" [class.show]="isSidebarOpen" (click)="isSidebarOpen = false"></div>
 
+  <!-- MENÚ LATERAL IZQUIERDO -->
   <aside class="sidebar" [class.open]="isSidebarOpen">
     <div class="logo">
-      <h1>Kamux</h1>
+      <h1 class="kamux-logo-text">Kamux</h1>
       <button class="btn-close-sidebar" (click)="isSidebarOpen = false">✕</button>
     </div>
     <nav class="menu">
@@ -12,10 +13,11 @@
         routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: true }"
         (click)="isSidebarOpen = false"
-        ><span>🏠</span> Inicio / Buscar</a
       >
-      <a routerLink="/playlists" routerLinkActive="active" (click)="isSidebarOpen = false"
-        ><span>🎶</span> Mis Playlists
+        <span>🏠</span> Inicio / Buscar
+      </a>
+      <a routerLink="/playlists" routerLinkActive="active" (click)="isSidebarOpen = false">
+        <span>🎶</span> Mis Playlists
       </a>
     </nav>
     <div class="user-section" *ngIf="currentUser$ | async as user">
@@ -24,14 +26,16 @@
     </div>
   </aside>
 
+  <!-- ÁREA DE CONTENIDO CENTRAL -->
   <main class="main-content">
     <header class="mobile-top-bar">
       <button class="btn-hamburger" (click)="isSidebarOpen = true">☰</button>
-      <span class="mobile-app-title">Kamux</span>
+      <span class="mobile-app-title kamux-logo-text">Kamux</span>
     </header>
     <router-outlet></router-outlet>
   </main>
 
+  <!-- PANTALLA EXPANDIDA REPRODUCTOR COMPLETO -->
   <div
     class="player-expanded-panel"
     [class.active]="isPlayerExpanded"
@@ -42,69 +46,88 @@
     </div>
 
     <div class="expanded-panel-body" *ngIf="currentSong$ | async as song">
-      <div
-        class="mobile-mini-top-player"
-        *ngIf="isTabsSectionOpen"
-        (click)="isTabsSectionOpen = false"
-      >
-        <div class="mini-player-left">
-          <img [src]="song.thumbnail" alt="Thumb" class="mini-player-thumb" />
-          <div class="mini-player-texts">
-            <p class="mini-title">{{ song.title }}</p>
-            <p class="mini-artist">{{ song.artist }}</p>
-          </div>
-        </div>
-        <div class="mini-player-right">
-          <button class="mini-play-btn" (click)="onTogglePlay(); $event.stopPropagation()">
-            {{ (isPlaying$ | async) ? '⏸' : '▶' }}
-          </button>
-        </div>
-      </div>
-
-      <div
-        class="mobile-main-player-block"
-        *ngIf="!isTabsSectionOpen"
-        (touchstart)="onTouchStart($event)"
-        (touchend)="onTouchEnd($event)"
-      >
-        <div class="expanded-left-cover-block">
-          <div class="giant-cover-wrapper">
-            <img [src]="song.thumbnail" alt="Giant Cover" class="giant-cover-img" />
-          </div>
-        </div>
-
-        <div class="mobile-expanded-player-ui">
-          <div class="mobile-track-meta">
-            <h2 class="m-track-title">{{ song.title }}</h2>
-            <p class="m-track-artist">{{ song.artist }}</p>
-          </div>
-          <div class="mobile-progress-wrapper">
-            <input
-              type="range"
-              min="0"
-              [max]="duration$ | async"
-              [value]="isUserSeeking ? temporarySeekValue : (currentTime$ | async)"
-              class="progress-slider"
-              (input)="onSeekInput($event)"
-              (change)="onSeekChange($event)"
-            />
-            <div class="mobile-time-stamps">
-              <span>{{
-                formatTime(isUserSeeking ? temporarySeekValue : (currentTime$ | async))
-              }}</span>
-              <span>{{ formatTime(duration$ | async) }}</span>
+      <!-- 📱 MÓVIL EXCLUSIVO -->
+      <div class="mobile-exclusive-block">
+        <div
+          class="mobile-mini-top-player"
+          *ngIf="isTabsSectionOpen"
+          (click)="isTabsSectionOpen = false"
+        >
+          <div class="mini-player-left">
+            <img [src]="song.thumbnail" alt="Thumb" class="mini-player-thumb" />
+            <div class="mini-player-texts">
+              <p class="mini-title">{{ song.title }}</p>
+              <p class="mini-artist">{{ song.artist }}</p>
             </div>
           </div>
-          <div class="mobile-controls-row">
-            <button class="m-ctrl-prev" (click)="onPrevious(); $event.stopPropagation()">⏮</button>
-            <button class="m-ctrl-main-play" (click)="onTogglePlay(); $event.stopPropagation()">
-              {{ (isPlaying$ | async) ? '⏸' : '▶' }}
+          <div class="mini-player-right" *ngIf="isPlaying$ | async as playingState">
+            <button class="mini-play-btn" (click)="onTogglePlay(); $event.stopPropagation()">
+              {{ playingState ? '⏸' : '▶' }}
             </button>
-            <button class="m-ctrl-next" (click)="onNext(); $event.stopPropagation()">⏭</button>
+          </div>
+        </div>
+
+        <div
+          class="mobile-main-player-block"
+          *ngIf="!isTabsSectionOpen"
+          (touchstart)="onTouchStart($event)"
+          (touchend)="onTouchEnd($event)"
+        >
+          <div class="expanded-left-cover-block">
+            <div class="giant-cover-wrapper">
+              <img [src]="song.thumbnail" alt="Giant Cover" class="giant-cover-img" />
+            </div>
+          </div>
+          <div class="mobile-expanded-player-ui">
+            <div class="mobile-track-meta">
+              <h2 class="m-track-title">{{ song.title }}</h2>
+              <p class="m-track-artist">{{ song.artist }}</p>
+            </div>
+
+            <!-- CONTENEDOR DE PROGRESO MÓVIL -->
+            <div class="mobile-progress-wrapper">
+              <input
+                type="range"
+                min="0"
+                [max]="duration$ | async"
+                [value]="isUserSeeking ? temporarySeekValue : (currentTime$ | async)"
+                class="mobile-progress-slider"
+                (input)="onSeekInput($event)"
+                (change)="onSeekChange($event)"
+              />
+              <div class="mobile-time-stamps">
+                <span>{{
+                  formatTime(isUserSeeking ? temporarySeekValue : (currentTime$ | async))
+                }}</span>
+                <span>{{ formatTime(duration$ | async) }}</span>
+              </div>
+            </div>
+
+            <div class="mobile-controls-row">
+              <button class="m-ctrl-prev" (click)="onPrevious(); $event.stopPropagation()">
+                ⏮
+              </button>
+              <button class="m-ctrl-main-play" (click)="onTogglePlay(); $event.stopPropagation()">
+                {{ (isPlaying$ | async) ? '⏸' : '▶' }}
+              </button>
+              <button class="m-ctrl-next" (click)="onNext(); $event.stopPropagation()">⏭</button>
+            </div>
           </div>
         </div>
       </div>
 
+      <!-- 💻 ORDENADOR ESCRITORIO EXCLUSIVO -->
+      <div class="desktop-left-panel">
+        <div class="giant-cover-wrapper">
+          <img [src]="song.thumbnail" alt="Giant Cover" class="giant-cover-img" />
+        </div>
+        <div class="desktop-track-meta">
+          <h2 class="d-track-title">{{ song.title }}</h2>
+          <p class="d-track-artist">{{ song.artist }}</p>
+        </div>
+      </div>
+
+      <!-- PESTAÑAS DERECHAS -->
       <div class="expanded-right-tabs-block" [class.fullscreen-active]="isTabsSectionOpen">
         <div class="tabs-header-row">
           <button
@@ -172,6 +195,7 @@
     </div>
   </div>
 
+  <!-- BARRA DE REPRODUCCIÓN INFERIOR (GLOBAL) -->
   <footer class="player-bar" (click)="togglePlayerExpand($event)">
     <div class="current-track">
       <div class="track-info" *ngIf="currentSong$ | async as song; else noSong">
@@ -193,13 +217,17 @@
 
     <div class="player-center-block">
       <div class="player-controls">
-        <button class="control-btn" (click)="onPrevious()">⏮</button>
-        <button class="control-btn play-btn" (click)="onTogglePlay()">
+        <button class="control-btn" (click)="onPrevious(); $event.stopPropagation()">⏮</button>
+        <button class="control-btn play-btn" (click)="onTogglePlay(); $event.stopPropagation()">
           {{ (isPlaying$ | async) ? '⏸' : '▶' }}
         </button>
-        <button class="control-btn" (click)="onNext()">⏭</button>
+        <button class="control-btn" (click)="onNext(); $event.stopPropagation()">⏭</button>
       </div>
-      <div class="progress-timeline-wrapper" *ngIf="currentSong$ | async">
+      <div
+        class="progress-timeline-wrapper"
+        *ngIf="currentSong$ | async"
+        (click)="$event.stopPropagation()"
+      >
         <span class="time-stamp">{{ formatTime(currentTime$ | async) }}</span>
         <input
           type="range"
@@ -213,14 +241,22 @@
       </div>
     </div>
 
-    <div class="mobile-bar-actions">
+    <div class="mobile-bar-actions" *ngIf="isPlaying$ | async as playingState">
       <button class="mobile-bar-play-btn" (click)="onTogglePlay(); $event.stopPropagation()">
-        {{ (isPlaying$ | async) ? '⏸' : '▶' }}
+        {{ playingState ? '⏸' : '▶' }}
       </button>
     </div>
-    <div class="player-volume">
+
+    <div class="player-volume" (click)="$event.stopPropagation()">
       <span>🔊</span>
-      <input type="range" class="volume-slider" (input)="onVolumeChange($event)" />
+      <input
+        type="range"
+        class="volume-slider"
+        min="0"
+        max="1"
+        step="0.01"
+        (input)="onVolumeChange($event)"
+      />
     </div>
   </footer>
 </div>

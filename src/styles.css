@@ -7,3 +7,12 @@ body {
   background-color: #121212;
   overflow: hidden;
 }
+
+:root {
+  --vk-green: #1db954;
+}
+
+span.kamux-logo-text,
+h1.kamux-logo-text {
+  color: #1db954 !important;
+}
