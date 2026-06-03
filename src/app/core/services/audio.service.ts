@@ -134,11 +134,15 @@ export class AudioService {
   }
 
   loadAndPlay(song: Song): void {
-    this.stop();
+    this.updateMediaSessionMetadata(song);
+    this.updateMediaSessionPlaybackState('playing');
+
+    this.audio.pause();
+    this.audio.currentTime = 0;
+    this.isSeeking = false;
+
     this.currentSongSubject.next(song);
     this.isPlayingSubject.next(true);
-    this.currentTimeSubject.next(0);
-    this.isSeeking = false;
 
     if (this.audioContext && this.audioContext.state === 'suspended') {
       this.audioContext.resume();
@@ -174,9 +178,6 @@ export class AudioService {
       });
       return;
     }
-
-    this.updateMediaSessionMetadata(song);
-    this.updateMediaSessionPlaybackState('playing');
 
     this.audio.src = `${API_URL}/songs/stream/${song.youtube_id}?token=${token}`;
     this.audio.load();
