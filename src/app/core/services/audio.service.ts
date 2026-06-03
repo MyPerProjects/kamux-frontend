@@ -63,6 +63,48 @@ export class AudioService {
       this.isSeeking = false;
       this.currentTimeSubject.next(this.audio.currentTime);
     });
+
+    this.initMediaSessionActionHandlers();
+  }
+
+  private initMediaSessionActionHandlers(): void {
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.setActionHandler('play', () => {
+        this.togglePlay();
+      });
+      navigator.mediaSession.setActionHandler('pause', () => {
+        this.togglePlay();
+      });
+      navigator.mediaSession.setActionHandler('previoustrack', () => {
+        this.previous();
+      });
+      navigator.mediaSession.setActionHandler('nexttrack', () => {
+        this.next();
+      });
+    }
+  }
+
+  private updateMediaSessionMetadata(song: Song): void {
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: song.title,
+        artist: song.artist,
+        album: 'Kamux Official',
+        artwork: [
+          {
+            src: song.thumbnail || 'assets/default-track.png',
+            sizes: '512x512',
+            type: 'image/jpeg',
+          },
+        ],
+      });
+    }
+  }
+
+  private updateMediaSessionPlaybackState(state: 'playing' | 'paused' | 'none'): void {
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.playbackState = state;
+    }
   }
 
   public getAnalyserNode(): AnalyserNode | null {
@@ -104,7 +146,6 @@ export class AudioService {
 
     const token = localStorage.getItem('kamux_token') || '';
 
-    // INTERCEPTOR FAIL-SAFE: Si el usuario cliqueó un track sin ID de YouTube, lo resuelve en caliente
     if (!song.youtube_id) {
       console.log(
         `[🎯 Clic Caliente] Resolviendo ID en tiempo real para: ${song.artist} - ${song.title}`,
@@ -114,21 +155,35 @@ export class AudioService {
           if (res && res.youtube_id) {
             song.youtube_id = res.youtube_id;
             song.thumbnail = res.thumbnail;
+
+            this.updateMediaSessionMetadata(song);
+            this.updateMediaSessionPlaybackState('playing');
+
             this.audio.src = `${API_URL}/songs/stream/${song.youtube_id}?token=${token}`;
             this.audio.load();
-            this.audio.play().catch(() => this.isPlayingSubject.next(false));
+            this.audio.play().catch(() => {
+              this.isPlayingSubject.next(false);
+              this.updateMediaSessionPlaybackState('paused');
+            });
           }
         },
-        error: () => this.isPlayingSubject.next(false),
+        error: () => {
+          this.isPlayingSubject.next(false);
+          this.updateMediaSessionPlaybackState('none');
+        },
       });
       return;
     }
+
+    this.updateMediaSessionMetadata(song);
+    this.updateMediaSessionPlaybackState('playing');
 
     this.audio.src = `${API_URL}/songs/stream/${song.youtube_id}?token=${token}`;
     this.audio.load();
     this.audio.play().catch((err) => {
       console.error('Error al reproducir audio:', err);
       this.isPlayingSubject.next(false);
+      this.updateMediaSessionPlaybackState('paused');
     });
 
     if (this.isAutoplayMode) {
@@ -137,7 +192,6 @@ export class AudioService {
   }
 
   private fetchAndAppendRelatedSongs(song: Song): void {
-    // Usamos metadatos puros de estudio para alimentar el motor de recomendaciones
     this.songsService.getRelatedSongsExtended(song.artist, song.title).subscribe({
       next: (recommendedTracks) => {
         if (!recommendedTracks || recommendedTracks.length === 0) return;
@@ -163,11 +217,8 @@ export class AudioService {
   public loadMoreInfiniteTracks(): void {
     if (this.playlistQueue.length === 0) return;
 
-    // SCROLL SECUENCIAL: Tomamos de manera secuencial los últimos tracks de la cola como contexto ampliado
     const queueLength = this.playlistQueue.length;
     const sampleTracks = this.playlistQueue.slice(Math.max(0, queueLength - 3), queueLength);
-
-    // Elegimos de forma cíclica o secuencial uno de los últimos tracks para expandir las recomendaciones
     const selectedSeed = sampleTracks[Math.floor(Math.random() * sampleTracks.length)];
 
     console.log(
@@ -176,7 +227,6 @@ export class AudioService {
     this.fetchAndAppendRelatedSongs(selectedSeed);
   }
 
-  // WORKER ASÍNCRONO DE FONDO: Resuelve los IDs de la cola de forma secuencial y controlada
   private triggerBackgroundQueueResolver(): void {
     if (this.isResolvingQueue) return;
 
@@ -195,7 +245,6 @@ export class AudioService {
                   track.youtube_id = res.youtube_id;
                   track.thumbnail = res.thumbnail;
                 }
-                // Pequeño delay de cortesía para estabilizar el consumo de cuota de red
                 setTimeout(() => resolve(track), 300);
               },
               error: () => setTimeout(() => resolve(track), 300),
@@ -208,7 +257,6 @@ export class AudioService {
           this.isResolvingQueue = false;
           this.playlistQueueSubject.next(this.playlistQueue);
 
-          // Re-verificación por si entraron nuevas canciones al final de la cola mientras procesaba
           const checkNew = this.playlistQueue.some((t) => !t.youtube_id);
           if (checkNew) this.triggerBackgroundQueueResolver();
         },
@@ -223,9 +271,11 @@ export class AudioService {
       }
       this.audio.play();
       this.isPlayingSubject.next(true);
+      this.updateMediaSessionPlaybackState('playing');
     } else {
       this.audio.pause();
       this.isPlayingSubject.next(false);
+      this.updateMediaSessionPlaybackState('paused');
     }
   }
 
@@ -263,5 +313,6 @@ export class AudioService {
     this.audio.currentTime = 0;
     this.isPlayingSubject.next(false);
     this.isSeeking = false;
+    this.updateMediaSessionPlaybackState('none');
   }
 }
