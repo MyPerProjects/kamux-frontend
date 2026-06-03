@@ -1,16 +1,21 @@
 <div class="history-page">
   <div class="history-header">
-    <button class="back-btn" (click)="goBack()">← Volver al inicio</button>
-    <h2>Todo tu historial de reproducción</h2>
+    <button class="back-btn" (click)="goBack()">
+      <span class="btn-arrow">←</span> Volver al inicio
+    </button>
+    <h2 class="history-title">Todo tu historial de reproducción</h2>
   </div>
 
   <div class="history-grid" *ngIf="!loading">
     <div class="ytm-song-card" *ngFor="let song of historySongs" (click)="playSong(song)">
       <div class="card-thumb-wrapper">
         <img [src]="song.thumbnail" alt="Cover" class="card-thumb" />
-        <div class="play-overlay desktop-play-overlay"><span class="play-icon">▶</span></div>
+        <div class="play-overlay desktop-play-overlay">
+          <button class="card-play-action">▶</button>
+        </div>
         <div class="mobile-card-title-overlay">
-          <p>{{ song.title }}</p>
+          <p class="m-card-title">{{ song.title }}</p>
+          <p class="m-card-artist">{{ song.artist }}</p>
         </div>
       </div>
       <div class="card-info">

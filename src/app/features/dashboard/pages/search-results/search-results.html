@@ -1,32 +1,64 @@
 <div class="search-results-page">
   <div class="results-header">
-    <button class="back-btn" (click)="goBack()">← Volver al inicio</button>
-    <h2>
+    <button class="back-btn" (click)="goBack()">
+      <span class="btn-arrow">←</span> Volver al inicio
+    </button>
+    <h2 class="search-title">
       Resultados oficiales para: <span class="highlight">"{{ currentSearch }}"</span>
     </h2>
   </div>
 
-  <div class="loading-spinner" *ngIf="loading">
-    <div class="spinner"></div>
-    <p style="margin-top: 15px; color: #aaa">Escaneando servidores de Google...</p>
+  <div class="loading-container" *ngIf="loading">
+    <div class="kamux-spinner"></div>
+    <p class="loading-text">Escaneando bases de datos de streaming...</p>
   </div>
 
-  <div class="results-list" *ngIf="!loading && results.length > 0">
-    <div class="track-row" *ngFor="let song of results" (click)="playSong(song)">
-      <div class="track-left">
-        <img [src]="song.thumbnail || 'assets/default-track.png'" alt="Cover" class="track-cover" />
-        <div class="track-details">
-          <span class="track-title">{{ song.title }}</span>
-          <span class="track-artist">{{ song.artist }}</span>
+  <div class="search-dashboard-grid" *ngIf="!loading && results.length > 0">
+    <div class="top-result-card" (click)="playSong(results[0])">
+      <div class="top-result-badge">RESULTADO DESTACADO</div>
+      <img
+        [src]="results[0].thumbnail || 'assets/default-track.png'"
+        alt="Top Cover"
+        class="top-result-cover"
+      />
+      <h3 class="top-result-title">{{ results[0].title }}</h3>
+      <p class="top-result-artist">
+        <span class="artist-prefix">Artista</span> {{ results[0].artist }}
+      </p>
+      <button class="top-result-play-action">▶</button>
+    </div>
+
+    <div class="results-list-wrapper">
+      <h4 class="section-sub-title">Canciones oficiales</h4>
+      <div class="results-list">
+        <div
+          class="track-row"
+          *ngFor="let song of results; let idx = index"
+          (click)="playSong(song)"
+        >
+          <div class="track-left">
+            <span class="track-index">{{ idx + 1 }}</span>
+            <img
+              [src]="song.thumbnail || 'assets/default-track.png'"
+              alt="Cover"
+              class="track-cover"
+            />
+            <div class="track-details">
+              <span class="track-title">{{ song.title }}</span>
+              <span class="track-artist">{{ song.artist }}</span>
+            </div>
+          </div>
+          <div class="track-right">
+            <span class="track-badge">Oficial</span>
+          </div>
         </div>
-      </div>
-      <div class="track-right">
-        <span class="track-badge">Oficial</span>
       </div>
     </div>
   </div>
 
-  <div class="no-results" *ngIf="!loading && results.length === 0">
-    <p>No se encontraron lanzamientos oficiales. Intenta con otros términos.</p>
+  <div class="no-results-card" *ngIf="!loading && results.length === 0">
+    <span class="no-results-icon">🔍</span>
+    <h3>¿Sin lanzamientos oficiales?</h3>
+    <p>Intenta buscando de nuevo con el nombre exacto de la banda o el track.</p>
   </div>
 </div>

@@ -1,12 +1,10 @@
-/* ==========================================================================
-   🏠 VARIABLES Y CONFIGURACIÓN BASE GLOBAL
-   ========================================================================== */
 :root {
   --vk-green: #1db954;
   --bg-dark: #000000;
-  --bg-panel: #121212;
-  --border-color: #282828;
-  --text-muted: #b3b3b3;
+  --bg-panel: #0d0d0d;
+  --bg-card: #161616;
+  --border-color: #222222;
+  --text-muted: #a7a7a7;
 }
 
 .app-container,
@@ -20,28 +18,32 @@
   display: flex;
   background-color: var(--bg-dark);
   color: #ffffff;
-  font-family: Arial, sans-serif;
+  font-family: 'Inter', sans-serif;
   overflow: hidden;
   position: relative;
+  padding: 12px;
+  box-sizing: border-box;
+  gap: 12px;
 }
 
-/* SIDEBAR IZQUIERDA */
 .sidebar {
-  width: 240px;
-  background-color: var(--bg-dark);
+  width: 260px;
+  background-color: var(--bg-panel);
   display: flex;
   flex-direction: column;
-  padding: 24px;
-  border-right: 1px solid var(--border-color);
+  padding: 32px 24px;
+  border-radius: 12px;
   box-sizing: border-box;
   z-index: 10;
+  border: 1px solid rgba(255, 255, 255, 0.03);
 }
 
 .logo {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 32px;
+  margin-bottom: 40px;
+  padding-left: 8px;
 }
 
 .kamux-logo-text {
@@ -49,10 +51,10 @@
 }
 
 .logo h1.kamux-logo-text {
-  font-size: 28px;
+  font-size: 30px;
   margin: 0;
-  font-weight: bold;
-  letter-spacing: -1px;
+  font-weight: 800;
+  letter-spacing: -1.5px;
 }
 
 .btn-close-sidebar {
@@ -72,118 +74,141 @@
 .menu {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
   flex: 1;
 }
 
 .menu a {
   color: var(--text-muted);
   text-decoration: none;
-  font-size: 14px;
-  font-weight: bold;
+  font-size: 15px;
+  font-weight: 600;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 12px;
-  border-radius: 4px;
+  gap: 16px;
+  padding: 12px 16px;
+  border-radius: 8px;
   transition:
     color 0.2s,
-    background-color 0.2s;
+    background-color 0.2s,
+    transform 0.15s;
 }
 
-.menu a:hover,
+.menu a:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.05);
+  transform: translateX(4px);
+}
+
 .menu a.active {
   color: #ffffff;
-  background-color: var(--border-color);
+  background-color: rgba(29, 185, 84, 0.1);
 }
 
 .user-section {
   margin-top: auto;
-  padding-top: 16px;
+  padding-top: 20px;
   border-top: 1px solid var(--border-color);
 }
 
 .username {
   font-size: 14px;
-  margin: 0 0 12px 0;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  padding-left: 8px;
 }
 
 .btn-logout {
   width: 100%;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.03);
   color: #ffffff;
-  border: 1px solid var(--text-muted);
-  padding: 8px;
-  border-radius: 20px;
-  font-weight: bold;
+  border: 1px solid var(--border-color);
+  padding: 12px;
+  border-radius: 24px;
+  font-weight: 700;
   cursor: pointer;
-  font-size: 12px;
-  transition: background-color 0.2s;
+  font-size: 13px;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
 }
 
 .btn-logout:hover {
-  background-color: var(--border-color);
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .sidebar-overlay {
   display: none;
 }
 
-/* ==========================================================================
-   💻 ÁREA CENTRAL Y BARRA DE REPRODUCCIÓN (ESCRITORIO)
-   ========================================================================== */
 .main-content {
   flex: 1;
-  height: calc(100dvh - 90px);
+  height: calc(100dvh - 120px);
   overflow-y: auto;
-  background: linear-gradient(to bottom, #1c1c1c, #000000);
+  background: linear-gradient(to bottom, #181818, var(--bg-panel));
   padding: 40px;
   box-sizing: border-box;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
 }
 
 .player-bar {
   position: absolute;
-  bottom: 0;
-  left: 240px;
-  width: calc(100vw - 240px);
-  height: 90px;
-  background-color: var(--bg-panel);
-  border-top: 1px solid var(--border-color);
+  bottom: 20px;
+  left: 284px;
+  width: calc(100vw - 304px);
+  height: 88px;
+  background-color: rgba(13, 13, 13, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 32px;
+  padding: 0 28px;
   box-sizing: border-box;
   z-index: 1000;
   cursor: pointer;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+  transition:
+    border-color 0.3s,
+    background-color 0.3s;
+}
+
+.player-bar:hover {
+  border-color: rgba(29, 185, 84, 0.3);
+  background-color: rgba(18, 18, 18, 0.9);
 }
 
 .current-track {
-  width: 25%;
+  width: 28%;
   min-width: 220px;
 }
 
 .track-info {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
 }
 
 .bar-mini-cover {
   display: block !important;
-  width: 56px;
-  height: 56px;
-  border-radius: 4px;
+  width: 58px;
+  height: 58px;
+  border-radius: 8px;
   object-fit: cover;
   flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .bar-mini-cover-placeholder {
   display: block;
-  width: 56px;
-  height: 56px;
-  border-radius: 4px;
-  background-color: var(--border-color);
+  width: 58px;
+  height: 58px;
+  border-radius: 8px;
+  background-color: var(--bg-card);
   flex-shrink: 0;
 }
 
@@ -195,7 +220,7 @@
 
 .track-info .track-title {
   font-size: 14px;
-  font-weight: bold;
+  font-weight: 700;
   color: #ffffff;
   margin: 0;
   white-space: nowrap;
@@ -206,7 +231,7 @@
 .track-info .track-artist {
   font-size: 12px;
   color: var(--text-muted);
-  margin: 4px 0 0 0;
+  margin: 3px 0 0 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -216,15 +241,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex: 1;
-  max-width: 600px;
+  max-width: 580px;
 }
 
 .player-controls {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 28px;
 }
 
 .control-btn {
@@ -233,17 +258,32 @@
   color: var(--text-muted);
   font-size: 18px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition:
     color 0.2s,
-    transform 0.1s;
+    transform 0.15s;
 }
 
 .control-btn:hover {
   color: #ffffff;
+  transform: scale(1.1);
 }
 
 .play-btn {
-  font-size: 26px;
+  font-size: 24px;
+  background-color: #ffffff;
+  color: #000000;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.play-btn:hover {
+  transform: scale(1.08);
+  background-color: var(--vk-green);
   color: #ffffff;
 }
 
@@ -254,14 +294,15 @@
 .progress-timeline-wrapper {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   width: 100%;
 }
 
 .time-stamp {
   font-size: 11px;
   color: var(--text-muted);
-  font-family: monospace;
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
   min-width: 35px;
 }
 
@@ -270,6 +311,8 @@
   accent-color: var(--vk-green);
   height: 4px;
   cursor: pointer;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
 }
 
 .progress-slider {
@@ -278,7 +321,7 @@
 
 .volume-slider {
   accent-color: #ffffff;
-  width: 100px;
+  width: 90px;
 }
 
 .player-volume {
@@ -287,7 +330,12 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 10px;
+}
+
+.player-volume span {
+  font-size: 14px;
+  color: var(--text-muted);
 }
 
 .mobile-bar-actions,
@@ -296,16 +344,13 @@
   display: none;
 }
 
-/* ==========================================================================
-   🚀 PANTALLA EXPANDIDA GIGANTE (ESCRITORIO)
-   ========================================================================== */
 .player-expanded-panel {
   position: fixed;
   top: 100dvh;
   left: 0;
   background-color: #000000 !important;
-  z-index: 998;
-  transition: top 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  z-index: 2000;
+  transition: top 0.45s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
   opacity: 1 !important;
@@ -319,32 +364,44 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 60px;
-  padding: 20px 40px 0 40px;
+  height: 80px;
+  padding: 20px 60px 0 60px;
   box-sizing: border-box;
+  background-color: #000000 !important;
 }
 
 .btn-minimize-panel {
-  background: none;
-  border: none;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   color: var(--text-muted);
-  font-size: 22px;
+  font-size: 16px;
   cursor: pointer;
-  transition: color 0.2s;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    color 0.2s,
+    background-color 0.2s,
+    border-color 0.2s;
 }
 
 .btn-minimize-panel:hover {
   color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .expanded-panel-body {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
+  grid-template-columns: 1.1fr 1fr;
   flex: 1;
-  gap: 60px;
+  gap: 100px;
   overflow: hidden;
   align-items: center;
-  padding: 0 80px 40px 80px;
+  padding: 0 120px 60px 120px;
   box-sizing: border-box;
   background-color: #000000 !important;
 }
@@ -355,35 +412,38 @@
   justify-content: center;
   align-items: center;
   width: 100%;
+  background-color: #000000 !important;
 }
 
 .desktop-track-meta {
   width: 100%;
-  max-width: 500px;
-  margin-top: 24px;
+  max-width: 480px;
+  margin-top: 32px;
   text-align: left;
 }
 
 .d-track-title {
-  font-size: 28px;
-  font-weight: bold;
+  font-size: 32px;
+  font-weight: 800;
   margin: 0;
   color: #ffffff;
+  letter-spacing: -0.5px;
 }
 
 .d-track-artist {
-  font-size: 16px;
+  font-size: 18px;
   color: var(--text-muted);
-  margin: 6px 0 0 0;
+  margin: 8px 0 0 0;
+  font-weight: 500;
 }
 
 .giant-cover-wrapper {
   width: 100%;
-  max-width: 500px;
+  max-width: 480px;
   aspect-ratio: 1 / 1;
-  border-radius: 8px;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9);
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.85);
 }
 
 .giant-cover-img {
@@ -395,19 +455,21 @@
 .expanded-right-tabs-block {
   width: 100%;
   height: 100%;
-  max-height: 540px;
-  background-color: #121212 !important;
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
+  max-height: 560px;
+  background-color: #0d0d0d !important;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
 }
 
 .tabs-header-row {
   display: flex;
-  border-bottom: 1px solid var(--border-color);
-  background-color: #121212;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: #0d0d0d !important;
+  padding: 6px 12px 0 12px;
 }
 
 .tabs-header-row button {
@@ -417,9 +479,9 @@
   color: var(--text-muted);
   padding: 18px 0;
   font-size: 13px;
-  font-weight: bold;
+  font-weight: 700;
   cursor: pointer;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
   transition: color 0.2s;
   position: relative;
 }
@@ -433,41 +495,44 @@
   content: '';
   position: absolute;
   bottom: 0;
-  left: 15%;
-  width: 70%;
+  left: 20%;
+  width: 60%;
   height: 3px;
   background-color: var(--vk-green);
+  border-radius: 3px 3px 0 0;
 }
 
 .tabs-content-viewport {
   flex: 1;
-  padding: 24px;
+  padding: 28px;
   overflow-y: auto;
-  background-color: #121212 !important;
+  background-color: #0d0d0d !important;
 }
 
 .queue-tracks-list-container {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+  background-color: #0d0d0d !important;
 }
 
 .queue-track-item {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 8px;
-  border-radius: 4px;
+  padding: 10px 14px;
+  border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.15s;
+  background-color: #0d0d0d !important;
 }
 
 .queue-track-item:hover {
-  background-color: var(--border-color);
+  background-color: rgba(255, 255, 255, 0.04) !important;
 }
 
 .queue-track-item.current-playing-row {
-  background-color: rgba(29, 185, 84, 0.1);
+  background-color: rgba(29, 185, 84, 0.08) !important;
 }
 
 .queue-track-item.current-playing-row .q-track-title {
@@ -475,9 +540,9 @@
 }
 
 .q-track-mini-thumb {
-  width: 42px;
-  height: 42px;
-  border-radius: 4px;
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
   object-fit: cover;
 }
 
@@ -488,7 +553,7 @@
 
 .q-track-title {
   font-size: 14px;
-  font-weight: bold;
+  font-weight: 700;
   color: #ffffff;
   margin: 0;
 }
@@ -496,7 +561,7 @@
 .q-track-artist {
   font-size: 12px;
   color: var(--text-muted);
-  margin: 2px 0 0 0;
+  margin: 3px 0 0 0;
 }
 
 .queue-loading-spinner {
@@ -530,21 +595,26 @@
   scroll-behavior: smooth;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 28px;
+  background-color: #0d0d0d !important;
 }
 
 .lyric-line {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.3);
-  transition: color 0.3s ease;
+  color: rgba(255, 255, 255, 0.25);
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
   line-height: 1.4;
+  transform-origin: left center;
 }
 
 .lyric-line.active {
   color: var(--vk-green);
-  font-size: 24px;
-  text-shadow: 0 0 15px rgba(29, 185, 84, 0.4);
+  font-size: 26px;
+  transform: scale(1.02);
+  text-shadow: 0 0 20px rgba(29, 185, 84, 0.35);
 }
 
 .lyrics-loading-box {
@@ -552,16 +622,15 @@
   justify-content: center;
   align-items: center;
   height: 100%;
+  background-color: #0d0d0d !important;
 }
 
 .lyrics-placeholder-text {
   color: var(--text-muted);
   font-size: 14px;
+  font-weight: 600;
 }
 
-/* ==========================================================================
-   📱 RESPONSIVE MEDIA QUERY (REDMI 10C OPTIMIZADO)
-   ========================================================================== */
 @media (max-width: 768px) {
   .desktop-left-panel {
     display: none !important;
@@ -597,6 +666,13 @@
     width: 100vw !important;
     height: 72px;
     padding: 0 16px;
+    bottom: 0 !important;
+    border-radius: 0 !important;
+    background-color: var(--bg-panel) !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
   }
 
   .sidebar {
@@ -609,6 +685,8 @@
     border-right: 1px solid var(--border-color);
     z-index: 2500;
     transition: left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border-radius: 0 !important;
+    border: none !important;
   }
 
   .sidebar.open {
@@ -651,6 +729,7 @@
   .bar-mini-cover {
     width: 46px !important;
     height: 46px !important;
+    border-radius: 6px !important;
   }
 
   .player-center-block,
@@ -681,6 +760,8 @@
     height: calc(100dvh - 72px);
     padding: 16px;
     background-color: #000000;
+    border-radius: 0 !important;
+    border: none !important;
   }
 
   .player-expanded-panel {
@@ -774,7 +855,6 @@
     color: var(--text-muted);
   }
 
-  /* ✨ EXTRA CORREGIDO: Forzar maquetación simétrica horizontal para el slider móvil */
   .mobile-progress-wrapper {
     width: 100% !important;
     margin-bottom: 20px;
@@ -830,16 +910,28 @@
     font-size: 26px;
   }
 
+  /* ✨ CORREGIDO PARA MÓVIL: Añadimos un padding-bottom seguro a la barra fija e incrementamos levemente su tamaño para albergar los textos con aire */
   .expanded-right-tabs-block {
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100vw;
-    height: 60px;
+    height: 74px;
     background-color: var(--bg-panel) !important;
     border-radius: 16px 16px 0 0;
     border: none;
     max-width: 100vw;
+    box-sizing: border-box;
+  }
+
+  .tabs-header-row {
+    height: 100%;
+    align-items: flex-start;
+    padding: 4px 16px var(--sab, 14px) 16px; /* Inyecta espacio de seguridad inferior contra el borde táctil */
+  }
+
+  .tabs-header-row button {
+    padding: 14px 0;
   }
 
   .expanded-right-tabs-block.fullscreen-active {
@@ -847,6 +939,11 @@
     max-height: none;
     background-color: #000000 !important;
     border-radius: 0;
+  }
+
+  .expanded-right-tabs-block.fullscreen-active .tabs-header-row {
+    padding-bottom: 0;
+    height: auto;
   }
 
   .tabs-content-viewport {

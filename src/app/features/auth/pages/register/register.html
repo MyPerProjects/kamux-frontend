@@ -1,8 +1,7 @@
 <div class="register-container">
   <div class="register-box">
-    <!-- Encabezado de marca unificado -->
     <div class="auth-logo">
-      <h1>Kamux</h1>
+      <h1 class="kamux-logo-text">Kamux</h1>
     </div>
 
     <h2>Crear Cuenta</h2>
@@ -50,7 +49,10 @@
       <p class="error-msg" *ngIf="errorMessage">{{ errorMessage }}</p>
       <p class="success-msg" *ngIf="successMessage">{{ successMessage }}</p>
 
-      <button type="submit" [disabled]="isLoading">
+      <button
+        type="submit"
+        [disabled]="isLoading || !username.trim() || !password.trim() || !confirmPassword.trim()"
+      >
         {{ isLoading ? 'Registrando...' : 'Registrarse' }}
       </button>
     </form>

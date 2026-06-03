@@ -200,7 +200,12 @@ export class MainLayout implements OnInit, OnDestroy {
   }
 
   onVolumeChange(e: Event): void {
-    this.audioService.setVolume(Number((e.target as HTMLInputElement).value));
+    const inputElement = e.target as HTMLInputElement;
+    const volumeValue = parseFloat(inputElement.value);
+    if (!isNaN(volumeValue) && volumeValue >= 0 && volumeValue <= 1) {
+      const convertedVolume = Math.round(volumeValue * 100);
+      this.audioService.setVolume(convertedVolume);
+    }
   }
 
   playFromQueue(s: Song, q: Song[]): void {

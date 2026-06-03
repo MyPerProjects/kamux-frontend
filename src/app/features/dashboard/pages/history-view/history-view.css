@@ -1,50 +1,55 @@
 .history-page {
-  padding: 0;
+  padding: 32px 40px;
   background: transparent;
+  min-height: calc(100vh - 120px);
   color: #ffffff;
   box-sizing: border-box;
 }
 
 .history-header {
-  margin-bottom: 32px;
+  margin-bottom: 36px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 
 .back-btn {
-  background: transparent;
-  color: #1db954; /* Cambiado al verde oficial Kamux */
-  border: 1px solid #1db954;
-  padding: 6px 16px;
-  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  color: #a7a7a7;
+  border: 1px solid #222222;
+  padding: 10px 20px;
+  border-radius: 24px;
   cursor: pointer;
-  font-size: 12px;
-  font-weight: bold;
+  font-size: 13px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   align-self: flex-start;
-  transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+  transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .back-btn:hover {
-  background-color: #1db954;
+  background: rgba(255, 255, 255, 0.08);
   color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateX(-4px);
 }
 
 .back-btn:active {
-  transform: scale(0.96);
+  transform: scale(0.96) translateX(-4px);
 }
 
-.history-header h2 {
+.history-title {
   font-size: 26px;
-  font-weight: bold;
+  font-weight: 800;
   margin: 0;
   letter-spacing: -0.5px;
 }
 
-/* GRILLA DISEÑO BASE ESCRITORIO PC */
 .history-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 32px 24px;
   width: 100%;
 }
@@ -52,23 +57,36 @@
 .ytm-song-card {
   width: 100%;
   cursor: pointer;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 14px;
+  border-radius: 12px;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.02);
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.ytm-song-card:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.04);
 }
 
 .card-thumb-wrapper {
   position: relative;
   aspect-ratio: 1 / 1;
   width: 100%;
-  border-radius: 6px;
+  border-radius: 8px;
   overflow: hidden;
-  background: #181818;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  background: #161616;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 .card-thumb {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .play-overlay {
@@ -77,41 +95,64 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 12px;
+  box-sizing: border-box;
   opacity: 0;
-  transition: opacity 0.2s ease;
-  pointer-events: none; /* Soluciona parpadeo en PC */
-}
-
-.play-icon {
-  color: #ffffff;
-  font-size: 34px;
+  transition: opacity 0.3s ease;
   pointer-events: none;
 }
 
+.card-play-action {
+  background: #1db954;
+  border: none;
+  color: #ffffff;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 3px;
+  box-shadow: 0 8px 20px rgba(29, 185, 84, 0.4);
+  transform: translateY(12px);
+  transition:
+    transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+    background-color 0.2s;
+}
+
+.card-play-action:hover {
+  background: #22c55e;
+  transform: scale(1.06) !important;
+}
+
 .card-info {
-  margin-top: 12px;
+  margin-top: 14px;
+  padding: 0 2px;
 }
 
 .card-title {
   color: #ffffff;
   font-size: 14px;
-  font-weight: bold;
+  font-weight: 700;
   margin: 0;
-  line-height: 1.3;
+  line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .card-meta {
-  color: #b3b3b3;
+  color: #a7a7a7;
   font-size: 12px;
-  margin: 4px 0 0 0;
+  margin: 6px 0 0 0;
+  font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -121,55 +162,97 @@
   display: none;
 }
 
-/* CONTROL DE HOVERS EXCLUSIVO PC */
 @media (hover: hover) and (pointer: fine) {
   .ytm-song-card:hover .card-thumb {
-    transform: scale(1.03);
+    transform: scale(1.04);
   }
   .ytm-song-card:hover .desktop-play-overlay {
     opacity: 1;
   }
+  .ytm-song-card:hover .card-play-action {
+    transform: translateY(0);
+  }
 }
 
-/* ADAPTACIÓN MÓVIL EXACTA A DOS CANCIONES POR FILA */
 @media (max-width: 768px) {
-  .history-header h2 {
-    font-size: 22px;
+  .history-page {
+    padding: 16px;
+    min-height: calc(100dvh - 72px);
+  }
+
+  .history-header {
+    margin-bottom: 24px;
+    gap: 16px;
+  }
+
+  .history-title {
+    font-size: 20px;
+    font-weight: 800;
   }
 
   .history-grid {
-    grid-template-columns: repeat(2, 1fr); /* Fuerza exactamente 2 columnas simétricas */
+    grid-template-columns: repeat(2, 1fr);
     gap: 14px 12px;
   }
 
+  .ytm-song-card {
+    padding: 0;
+    background: transparent;
+    border: none;
+  }
+
+  .card-thumb-wrapper {
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
   .card-info {
-    display: none; /* Oculta la metadata externa para evitar desencajes táctiles */
+    display: none;
   }
 
   .desktop-play-overlay {
-    display: none !important; /* Desactiva la capa de PC en pantallas touch */
+    display: none !important;
   }
 
   .mobile-card-title-overlay {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.3) 80%, transparent 100%);
-    padding: 8px 6px;
+    height: 60%;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.95) 0%,
+      rgba(0, 0, 0, 0.4) 70%,
+      transparent 100%
+    );
+    padding: 10px 8px;
     box-sizing: border-box;
   }
 
-  .mobile-card-title-overlay p {
+  .m-card-title {
     color: #ffffff;
-    font-size: 11px;
-    font-weight: bold;
+    font-size: 12px;
+    font-weight: 700;
     margin: 0;
-    line-height: 1.2;
+    line-height: 1.3;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .m-card-artist {
+    color: #a7a7a7;
+    font-size: 10px;
+    font-weight: 500;
+    margin: 4px 0 0 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }

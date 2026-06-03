@@ -1,7 +1,6 @@
 <div class="app-container">
   <div class="sidebar-overlay" [class.show]="isSidebarOpen" (click)="isSidebarOpen = false"></div>
 
-  <!-- MENÚ LATERAL IZQUIERDO -->
   <aside class="sidebar" [class.open]="isSidebarOpen">
     <div class="logo">
       <h1 class="kamux-logo-text">Kamux</h1>
@@ -26,7 +25,6 @@
     </div>
   </aside>
 
-  <!-- ÁREA DE CONTENIDO CENTRAL -->
   <main class="main-content">
     <header class="mobile-top-bar">
       <button class="btn-hamburger" (click)="isSidebarOpen = true">☰</button>
@@ -35,7 +33,6 @@
     <router-outlet></router-outlet>
   </main>
 
-  <!-- PANTALLA EXPANDIDA REPRODUCTOR COMPLETO -->
   <div
     class="player-expanded-panel"
     [class.active]="isPlayerExpanded"
@@ -46,7 +43,6 @@
     </div>
 
     <div class="expanded-panel-body" *ngIf="currentSong$ | async as song">
-      <!-- 📱 MÓVIL EXCLUSIVO -->
       <div class="mobile-exclusive-block">
         <div
           class="mobile-mini-top-player"
@@ -84,7 +80,6 @@
               <p class="m-track-artist">{{ song.artist }}</p>
             </div>
 
-            <!-- CONTENEDOR DE PROGRESO MÓVIL -->
             <div class="mobile-progress-wrapper">
               <input
                 type="range"
@@ -116,7 +111,6 @@
         </div>
       </div>
 
-      <!-- 💻 ORDENADOR ESCRITORIO EXCLUSIVO -->
       <div class="desktop-left-panel">
         <div class="giant-cover-wrapper">
           <img [src]="song.thumbnail" alt="Giant Cover" class="giant-cover-img" />
@@ -127,7 +121,6 @@
         </div>
       </div>
 
-      <!-- PESTAÑAS DERECHAS -->
       <div class="expanded-right-tabs-block" [class.fullscreen-active]="isTabsSectionOpen">
         <div class="tabs-header-row">
           <button
@@ -195,7 +188,6 @@
     </div>
   </div>
 
-  <!-- BARRA DE REPRODUCCIÓN INFERIOR (GLOBAL) -->
   <footer class="player-bar" (click)="togglePlayerExpand($event)">
     <div class="current-track">
       <div class="track-info" *ngIf="currentSong$ | async as song; else noSong">
@@ -255,6 +247,7 @@
         min="0"
         max="1"
         step="0.01"
+        value="1"
         (input)="onVolumeChange($event)"
       />
     </div>

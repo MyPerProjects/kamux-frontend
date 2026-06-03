@@ -13,7 +13,10 @@
   </div>
 
   <div class="sections-wrapper">
-    <div class="loader" *ngIf="isLoadingHistory">Sincronizando tus secciones personalizadas...</div>
+    <div class="loader-container" *ngIf="isLoadingHistory">
+      <div class="kamux-pulse-dot"></div>
+      <p>Sincronizando tus secciones personalizadas...</p>
+    </div>
 
     <section class="section-block" *ngIf="!isLoadingHistory && historySongs.length > 0">
       <div class="section-header-row">
@@ -36,9 +39,12 @@
           >
             <div class="card-thumb-wrapper">
               <img [src]="song.thumbnail" alt="Cover" class="card-thumb" />
-              <div class="play-overlay desktop-play-overlay"><span class="play-icon">▶</span></div>
+              <div class="play-overlay desktop-play-overlay">
+                <button class="card-play-action">▶</button>
+              </div>
               <div class="mobile-card-title-overlay">
-                <p>{{ song.title }}</p>
+                <p class="m-card-title">{{ song.title }}</p>
+                <p class="m-card-artist">{{ song.artist }}</p>
               </div>
             </div>
             <div class="card-info">
@@ -54,14 +60,14 @@
           *ngFor="let page of pagesArray"
           class="dot"
           [class.active]="page === activePageIndex"
-          (click)="scrollToPage(page)">
+          (click)="scrollToPage(page)"
+        >
         </span>
       </div>
     </section>
 
     <section
-      class="section-block"
-      style="margin-top: 45px"
+      class="section-block select-section-gap"
       *ngIf="!isLoadingHistory && quickSelectSongs.length > 0"
     >
       <div class="section-header-row">
@@ -69,7 +75,9 @@
           <h2 class="section-title">Selección rápida</h2>
         </div>
         <div class="header-actions">
-          <button class="ytm-btn-more" (click)="playAllQuickSelect()">Reproducir todo</button>
+          <button class="ytm-btn-more play-all-accent" (click)="playAllQuickSelect()">
+            Reproducir todo
+          </button>
           <button class="ytm-arrow-btn" (click)="scrollSection(quickScrollContainer, 'left')">
             ‹
           </button>
@@ -104,7 +112,9 @@
     </section>
 
     <div class="no-history-prompt" *ngIf="!isLoadingHistory && historySongs.length === 0">
-      <p>Aún no tienes canciones en tu historial. ¡Busca tus primeros tracks oficiales arriba!</p>
+      <span class="prompt-icon">📻</span>
+      <p>Aún no tienes canciones en tu historial.</p>
+      <p class="prompt-sub">¡Busca tus primeros tracks oficiales arriba!</p>
     </div>
   </div>
 </div>

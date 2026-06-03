@@ -1,8 +1,7 @@
 <div class="login-container">
   <div class="login-box">
-    <!-- Encabezado de marca unificado -->
     <div class="auth-logo">
-      <h1>Kamux</h1>
+      <h1 class="kamux-logo-text">Kamux</h1>
     </div>
 
     <h2>Iniciar Sesión</h2>
@@ -36,7 +35,7 @@
 
       <p class="error-msg" *ngIf="errorMessage">{{ errorMessage }}</p>
 
-      <button type="submit" [disabled]="isLoading">
+      <button type="submit" [disabled]="isLoading || !username.trim() || !password.trim()">
         {{ isLoading ? 'Cargando...' : 'Ingresar' }}
       </button>
     </form>

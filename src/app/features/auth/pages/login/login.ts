@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -11,16 +12,23 @@ import { AuthService } from '../../../../core/services/auth.service';
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class Login {
+export class Login implements OnInit, OnDestroy {
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly cdr = inject(ChangeDetectorRef);
+
   username = '';
   password = '';
   errorMessage = '';
   isLoading = false;
 
-  constructor(
-    private readonly authService: AuthService,
-    private readonly router: Router,
-  ) {}
+  private subManager = new Subscription();
+
+  ngOnInit(): void {}
+
+  ngOnDestroy(): void {
+    this.subManager.unsubscribe();
+  }
 
   onLogin(): void {
     if (!this.username.trim() || !this.password.trim()) {
@@ -30,15 +38,19 @@ export class Login {
 
     this.isLoading = true;
     this.errorMessage = '';
+    this.cdr.detectChanges();
 
-    this.authService.login(this.username, this.password).subscribe({
-      next: () => {
-        this.router.navigate(['/']); // Al ingresar con éxito, el Guard lo dejará pasar al Home
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.errorMessage = err.error?.message || 'Error al iniciar sesión. Inténtalo de nuevo.';
-      },
-    });
+    this.subManager.add(
+      this.authService.login(this.username, this.password).subscribe({
+        next: () => {
+          this.router.navigate(['/']);
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.errorMessage = err.error?.message || 'Error al iniciar sesión. Inténtalo de nuevo.';
+          this.cdr.detectChanges();
+        },
+      }),
+    );
   }
 }
