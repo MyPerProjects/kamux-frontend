@@ -46,7 +46,6 @@ export class Home implements OnInit {
     this.isLoadingHistory = true;
     this.songsService.getHistory().subscribe({
       next: (history: PlaybackHistory[]) => {
-        // 1. Mapeamos tu historial clásico de PostgreSQL
         const mappedSongs = history
           .filter((h) => h.song)
           .map((h) => ({
@@ -59,35 +58,34 @@ export class Home implements OnInit {
               'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=200&auto=format&fit=crop',
           }));
 
-        // 🟢 FILTRO DE UNICIDAD: Eliminamos duplicados manteniendo solo la última vez que se escuchó
         const uniqueSongsMap = new Map<string, Song>();
         mappedSongs.forEach((song) => {
-          // Si el youtube_id ya existe, lo sobrescribe (así se mantiene el orden cronológico del backend)
-          // O si el backend ya viene ordenado del más nuevo al más viejo, solo insertamos si no existía antes:
           if (!uniqueSongsMap.has(song.youtube_id)) {
             uniqueSongsMap.set(song.youtube_id, song);
           }
         });
 
-        // Convertimos el Map de vuelta a un arreglo limpio sin repeticiones y limitamos a 27 (3 bloques de 9)
         this.historySongs = Array.from(uniqueSongsMap.values()).slice(0, 27);
-
-        // Actualizamos los puntos indicadores en base a las canciones únicas reales
         const totalPages = Math.min(Math.ceil(this.historySongs.length / 9), 3);
         this.pagesArray = Array.from({ length: totalPages }, (_, i) => i);
 
-        // 2. MOTOR DE RECOMENDACIONES HÍBRIDO (Usa la lista ya filtrada para buscar similitudes)
-        let seedArtist = 'Megadeth';
-
-        if (this.historySongs.length > 0) {
-          const artistCounts = this.historySongs.reduce((acc: any, song) => {
-            acc[song.artist] = (acc[song.artist] || 0) + 1;
-            return acc;
-          }, {});
-          seedArtist = Object.keys(artistCounts).reduce((a, b) =>
-            artistCounts[a] > artistCounts[b] ? a : b,
-          );
+        // ✨ CONTROL ABSOLUTO: Si la cuenta es nueva y no hay historial, matamos el flujo aquí
+        if (this.historySongs.length === 0) {
+          this.quickSelectSongs = [];
+          this.isLoadingHistory = false;
+          this.cdr.detectChanges();
+          return; // Frenamos y evitamos que consulte a Megadeth por defecto
         }
+
+        // Si el usuario SÍ tiene historial, calculamos su artista favorito de forma normal
+        const artistCounts = this.historySongs.reduce((acc: any, song) => {
+          acc[song.artist] = (acc[song.artist] || 0) + 1;
+          return acc;
+        }, {});
+
+        const seedArtist = Object.keys(artistCounts).reduce((a, b) =>
+          artistCounts[a] > artistCounts[b] ? a : b,
+        );
 
         this.songsService.searchSongs(seedArtist).subscribe({
           next: (discoveredSongs: Song[]) => {
